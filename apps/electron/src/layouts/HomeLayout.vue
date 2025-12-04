@@ -1,16 +1,22 @@
 <template>
-    <Header />
-    <main>
-        <div v-if="!isOnline" class="network-status">
-            网络连接已断开
+    <div class="app-layout">
+        <Sidebar />
+        <div class="main-wrapper">
+            <Header />
+            <div v-if="!isOnline" class="network-status">
+                网络连接已断开
+            </div>
+            <main>
+                <router-view :playerControl="playerControl"></router-view>
+            </main>
         </div>
-        <router-view :playerControl="playerControl"></router-view>
-    </main>
-    <PlayerControl ref="playerControl" />
+        <PlayerControl ref="playerControl" />
+    </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
 import PlayerControl from "@/components/PlayerControl.vue";
 import { setTheme, applyColorTheme } from '../utils/utils';
@@ -106,13 +112,22 @@ body {
     height: 0;
 }
 
+.app-layout {
+    display: flex;
+    height: 100vh;
+}
+
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 main {
-    min-height: calc(100vh - 80px - 188px);
-    max-width: 1200px;
-    margin: 0 auto;
-    margin-bottom: 150px;
-    padding-top: 80px;
-    padding-bottom: 150px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 30px 150px 120px;
+    margin-top: 60px;
 }
 
 a {
@@ -123,7 +138,7 @@ a {
 
 .network-status {
     position: fixed;
-    top: 80px;
+    top: 92px;
     left: 0;
     right: 0;
     background-color: #ff4757;

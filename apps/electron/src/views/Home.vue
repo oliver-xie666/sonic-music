@@ -340,7 +340,6 @@ const addAllSongsToQueue = () => {
 
 <style scoped>
 .container {
-    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
