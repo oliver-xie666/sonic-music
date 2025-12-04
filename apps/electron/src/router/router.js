@@ -11,6 +11,8 @@ import Lyrics from '@/views/Lyrics.vue';
 import Ranking from '@/views/Ranking.vue';
 import CloudDrive from '@/views/CloudDrive.vue';
 import LocalMusic from '@/views/LocalMusic.vue';
+import Streaming from '@/views/Streaming.vue';
+import LocalMusicPage from '@/views/LocalMusicPage.vue';
 import { MoeAuthStore } from '@/stores/store';
 
 
@@ -22,6 +24,8 @@ const routes = [
             { path: '', name: 'Index', component: Home },
             { path: '/share', name: 'Share', component: Home },
             { path: '/discover', name: 'Discover', component: Discover },
+            { path: '/streaming', name: 'Streaming', component: Streaming },
+            { path: '/local-music', name: 'LocalMusicPage', component: LocalMusicPage },
             { path: '/library', name: 'Library', component: Library, meta: { requiresAuth: true } },
             { path: '/login', name: 'Login', component: Login },
             { path: '/settings', name: 'Settings', component: Settings },
