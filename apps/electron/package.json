@@ -1,0 +1,163 @@
+{
+  "name": "@sonic-music/electron",
+  "version": "0.0.1",
+  "homepage": "https://github.com/oliver-xie666/sonic-music",
+  "main": "electron/main.js",
+  "scripts": {
+    "install-all": "pnpm install && cd api && pnpm install",
+    "serve": "vite",
+    "build": "vite build",
+    "build:web": "vite build",
+    "build:docker": "cross-env VITE_APP_API_URL=/api vite build",
+    "preview": "vite preview",
+    "electron:serve": "cross-env NODE_ENV=development electron .",
+    "api": "node api/app.js",
+    "dev": "pnpm run api & pnpm run serve & pnpm run electron:serve",
+    "dev:web": "pnpm run api & pnpm run serve",
+    "build:api:win": "pnpm --prefix ./api run pkgwin",
+    "build:api:linux": "pnpm --prefix ./api run pkglinux",
+    "build:api:linux-aarch64": "pnpm --prefix ./api run pkglinux-aarch64",
+    "build:api:macos": "pnpm --prefix ./api run pkgmacos",
+    "electron:build:win": "run-s build:api:win \"electron:build -- --win --publish never\"",
+    "electron:build:linux": "run-s build:api:linux \"electron:build -- --linux --publish never\"",
+    "electron:build:linux-aarch64": "run-s build:api:linux-aarch64 \"electron:build -- --linux --publish never\"",
+    "electron:build:macos": "run-s build:api:macos \"electron:build -- --mac --universal --publish never\"",
+    "electron:build": "cross-env NODE_ENV=production electron-builder",
+    "lint": "eslint --ext .js,.vue src",
+    "format": "prettier --write \"**/*.{js,vue,json,md}\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "build": {
+    "publish": {
+      "provider": "github",
+      "owner": "oliver-xie666",
+      "repo": "sonic-music"
+    },
+    "compression": "maximum",
+    "extraResources": [
+      {
+        "from": "build/icons/",
+        "to": "icons/",
+        "filter": ["**/*"]
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "api/bin",
+        "to": "api/",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "public/assets",
+        "to": "assets"
+      }
+    ],
+    "appId": "com.sonicmusic.app",
+    "productName": "Sonic Music",
+    "copyright": "© 2025 oliver-xie666",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "icon": "build/icons/icon",
+    "protocols": [
+      {
+        "name": "Sonic Music Protocol",
+        "schemes": ["sonicmusic"]
+      }
+    ],
+    "win": {
+      "icon": "build/icons/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        }
+      ],
+      "artifactName": "Sonic_Music_Setup_v${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "installerIcon": "build/icons/icon.ico",
+      "uninstallerIcon": "build/icons/icon.ico",
+      "installerHeaderIcon": "build/icons/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sonic Music",
+      "include": "build/installer.nsh",
+      "license": "build/license.txt",
+      "language": "2052",
+      "warningsAsErrors": true
+    },
+    "mac": {
+      "x64ArchFiles": "*",
+      "icon": "build/icons/icon.icns",
+      "target": ["dmg", "zip"],
+      "identity": null,
+      "artifactName": "${productName}.${ext}",
+      "protocols": [
+        {
+          "name": "Sonic Music Protocol",
+          "schemes": ["sonicmusic"]
+        }
+      ]
+    },
+    "dmg": {
+      "sign": false
+    },
+    "linux": {
+      "icon": "build/icons/linux_256x256.png",
+      "target": ["AppImage", "deb"],
+      "category": "AudioVideo",
+      "artifactName": "${productName}.${ext}"
+    }
+  },
+  "type": "module",
+  "author": {
+    "name": "oliver-xie666",
+    "email": "153884673@qq.com"
+  },
+  "license": "MIT",
+  "description": "A modern cross-platform music player with multi-source support",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/compiler-sfc": "^3.5.12",
+    "cross-env": "^7.0.3",
+    "electron": "^39.0.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "0.25.11",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.20.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.3.3",
+    "vite": "^7.2.6",
+    "vite-plugin-pwa": "^1.2.0",
+    "vue-loader": "^17.3.1",
+    "wait-on": "^8.0.1"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "electron-is-dev": "^3.0.1",
+    "electron-log": "^5.2.0",
+    "electron-store": "^10.0.0",
+    "electron-updater": "^6.6.2",
+    "music-metadata": "^11.7.3",
+    "pinia": "^3.0.0",
+    "pinia-plugin-persistedstate": "^4.1.1",
+    "tree-kill": "^1.2.2",
+    "vue": "^3.5.12",
+    "vue-i18n": "^10.0.4",
+    "vue-router": "^4.4.5",
+    "vue3-virtual-scroller": "^0.2.3",
+    "ws": "^8.18.1"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "sonic-music",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A modern cross-platform music player with multi-source support",
+  "author": {
+    "name": "oliver-xie666",
+    "email": "153884673@qq.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/oliver-xie666/sonic-music",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oliver-xie666/sonic-music.git"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @sonic-music/electron dev",
+    "dev:web": "pnpm --filter @sonic-music/electron dev:web",
+    "dev:electron": "pnpm --filter @sonic-music/electron dev",
+    "build": "pnpm --filter @sonic-music/electron build",
+    "build:web": "pnpm --filter @sonic-music/electron build:web",
+    "build:electron:win": "pnpm --filter @sonic-music/electron electron:build:win",
+    "build:electron:macos": "pnpm --filter @sonic-music/electron electron:build:macos",
+    "build:electron:linux": "pnpm --filter @sonic-music/electron electron:build:linux",
+    "lint": "pnpm --filter @sonic-music/electron lint",
+    "format": "prettier --write \"**/*.{js,vue,json,md}\"",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
