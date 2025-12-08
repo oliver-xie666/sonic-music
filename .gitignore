@@ -46,3 +46,6 @@ release/
 
 
 .cursorrules
+
+# Claude Code
+.claude
