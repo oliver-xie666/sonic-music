@@ -1,5 +1,5 @@
 <template>
-    <div class="discover-page">
+    <div class="discover-page" :class="$setAnimationClass('animate__fadeIn')">
         <h2 class="section-title">{{ $t('fa-xian') }}</h2>
         
         <div class="category-container">

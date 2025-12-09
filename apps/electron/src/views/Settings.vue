@@ -1,5 +1,5 @@
 ﻿<template>
-    <div class="settings-page">
+    <div class="settings-page" :class="$setAnimationClass('animate__fadeIn')">
         <div class="settings-sidebar">
             <div v-for="(section, sectionIndex) in settingSections" :key="sectionIndex" 
                  class="sidebar-item" 

@@ -1,5 +1,5 @@
 <template>
-    <div class="lyrics-container" :class="{ 'locked': isLocked, 'hovering': isHovering && !isLocked }">
+    <div class="lyrics-container" :class="[$setAnimationClass('animate__fadeIn'), { 'locked': isLocked, 'hovering': isHovering && !isLocked }]">
         <!-- 控制栏 -->
         <div class="controls-overlay" ref="controlsOverlay">
             <div class="controls-wrapper" :class="{ 'locked-controls': isLocked }">

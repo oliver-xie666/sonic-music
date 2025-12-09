@@ -1,5 +1,5 @@
 <template>
-    <div class="library-page">
+    <div class="library-page" :class="$setAnimationClass('animate__fadeIn')">
         <div class="profile-section">
             <div class="profile-header" :style="`background-image: url(${userDetail.bg_pic || './assets/images/banner.png'})`">
                 <div class="profile-info">

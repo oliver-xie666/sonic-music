@@ -1,5 +1,5 @@
 <template>
-    <div class="detail-page">
+    <div class="detail-page" :class="$setAnimationClass('animate__fadeIn')">
         <div class="header">
             <img class="cover-art" :src="`./assets/images/local.png`" />
             <div class="info">

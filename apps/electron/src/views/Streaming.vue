@@ -1,5 +1,5 @@
 <template>
-  <div class="streaming-page">
+  <div class="streaming-page" :class="$setAnimationClass('animate__fadeIn')">
     <div class="page-header">
       <h1>流媒体</h1>
       <p class="subtitle">在线音乐流媒体服务</p>

@@ -1,5 +1,5 @@
 <template>
-    <div class="detail-page">
+    <div class="detail-page" :class="$setAnimationClass('animate__fadeIn')">
         <!-- 头部信息区域 -->
         <div class="header">
             <img class="cover-art" :class="isArtist ? 'artist-avatar' : ''" :data-playlist-id="detail.listid || null"

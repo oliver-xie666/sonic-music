@@ -1,5 +1,5 @@
 <template>
-    <div class="login-page">
+    <div class="login-page" :class="$setAnimationClass('animate__fadeIn')">
         <div class="login-container">
             <img src="https://www.kugou.com/yy/static/images/play/logo.png" alt="App Logo" class="logo" />
             <h2>{{ $t('deng-lu-ni-de-ku-gou-zhang-hao') }}</h2>
