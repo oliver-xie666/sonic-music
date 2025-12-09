@@ -194,15 +194,66 @@ async function consturctServer(moduleDefs) {
 }
 
 /**
+ * 检测端口是否可用
+ * @param {number} port
+ * @param {string} host
+ * @returns {Promise<boolean>}
+ */
+function isPortAvailable(port, host) {
+  return new Promise((resolve) => {
+    const net = require('net');
+    const server = net.createServer();
+
+    server.once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        resolve(false);
+      } else {
+        resolve(false);
+      }
+    });
+
+    server.once('listening', () => {
+      server.close();
+      resolve(true);
+    });
+
+    server.listen(port, host);
+  });
+}
+
+/**
+ * 查找可用端口
+ * @param {number} startPort
+ * @param {string} host
+ * @param {number} maxAttempts
+ * @returns {Promise<number>}
+ */
+async function findAvailablePort(startPort, host, maxAttempts = 10) {
+  for (let i = 0; i < maxAttempts; i++) {
+    const port = startPort + i;
+    const available = await isPortAvailable(port, host);
+    if (available) {
+      if (i > 0) {
+        console.log(`Port ${startPort} is in use, using port ${port} instead`);
+      }
+      return port;
+    }
+  }
+  throw new Error(`Could not find available port in range ${startPort}-${startPort + maxAttempts - 1}`);
+}
+
+/**
  * Serve the KG API
  * @returns {Promise<import('express').Express & ExpressExtension>}
  */
 async function startService() {
-  const port = Number(process.env.PORT || '6521');
+  const initialPort = Number(process.env.PORT || '6521');
   const host = process.env.HOST || '';
 
+  const port = await findAvailablePort(initialPort, host);
+
   const app = await consturctServer();
-  
+
   app.get('/', (req, res) => {
     res.send({
       type: 'welcome',
