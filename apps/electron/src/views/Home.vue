@@ -94,6 +94,18 @@
           </router-link>
         </div>
       </div>
+
+      <div class="recommend-card">
+        <div class="jay-playlist-entry gradient-background" @click="playJayPlaylist">
+          <div class="jay-playlist-content">
+            <div class="jay-icon">🎤</div>
+            <h3 class="jay-title">周杰伦</h3>
+            <div class="jay-description">
+              经典好歌精选
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <h2 class="section-title">
@@ -336,6 +348,13 @@ const addAllSongsToQueue = () => {
     })));
 };
 
+const playJayPlaylist = () => {
+    router.push({
+        path: '/PlaylistDetail',
+        query: { global_collection_id: 'collection_3_1632444_24_0' }
+    });
+};
+
 </script>
 
 <style scoped>
@@ -358,13 +377,14 @@ const addAllSongsToQueue = () => {
     cursor: cell;
 }
 .recommendations {
-    display: flex;
-    gap: 35px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
     margin-bottom: 40px;
 }
 
 .recommend-card {
-    width: 400px;
+    width: 100%;
     height: 200px;
     border-radius: 15px;
     overflow: hidden;
@@ -883,5 +903,278 @@ const addAllSongsToQueue = () => {
 .playlist-icon img {
     width: 100%;
     height: 100%;
+}
+
+/* 周杰伦歌单卡片样式 */
+.jay-playlist-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.jay-playlist-entry:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.jay-playlist-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.jay-icon {
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+.jay-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.jay-description {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* 响应式布局优化 */
+@media screen and (max-width: 1400px) {
+    .recommendations {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 18px;
+    }
+
+    .recommend-card {
+        height: 180px;
+    }
+
+    .radio-disc {
+        width: 110px;
+        height: 110px;
+    }
+
+    .ranking-icon {
+        width: 120px;
+    }
+
+    .playlist-icon {
+        width: 130px;
+        height: 130px;
+    }
+
+    .jay-icon {
+        font-size: 50px;
+    }
+
+    .jay-title {
+        font-size: 22px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .recommendations {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .recommend-card {
+        height: 170px;
+    }
+
+    .radio-disc {
+        width: 100px;
+        height: 100px;
+    }
+
+    .ranking-icon {
+        width: 110px;
+    }
+
+    .playlist-icon {
+        width: 120px;
+        height: 120px;
+    }
+
+    .jay-icon {
+        font-size: 45px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .recommendations {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .recommend-card {
+        height: 160px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .song-item {
+        width: calc(25% - 10px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .recommendations {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .recommend-card {
+        height: 150px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        margin-bottom: 18px;
+    }
+
+    .radio-disc {
+        width: 90px;
+        height: 90px;
+    }
+
+    .radio-title {
+        font-size: 18px;
+    }
+
+    .radio-subtitle {
+        font-size: 13px;
+    }
+
+    .ranking-icon {
+        width: 90px;
+    }
+
+    .ranking-title {
+        font-size: 20px;
+    }
+
+    .ranking-description {
+        font-size: 14px;
+    }
+
+    .playlist-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .jay-icon {
+        font-size: 40px;
+    }
+
+    .jay-title {
+        font-size: 20px;
+    }
+
+    .jay-description {
+        font-size: 14px;
+    }
+
+    .song-item {
+        width: calc(33.333% - 8px);
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .recommend-card {
+        height: 140px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .radio-disc {
+        width: 80px;
+        height: 80px;
+    }
+
+    .radio-title {
+        font-size: 16px;
+    }
+
+    .radio-subtitle {
+        font-size: 12px;
+    }
+
+    .ranking-icon {
+        width: 80px;
+    }
+
+    .ranking-title {
+        font-size: 18px;
+    }
+
+    .ranking-description {
+        font-size: 13px;
+    }
+
+    .playlist-icon {
+        width: 90px;
+        height: 90px;
+    }
+
+    .jay-icon {
+        font-size: 35px;
+    }
+
+    .jay-title {
+        font-size: 18px;
+    }
+
+    .jay-description {
+        font-size: 13px;
+    }
+
+    .song-item {
+        width: calc(50% - 6px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    .recommend-card {
+        height: 130px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .play-button {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .song-item {
+        width: 100%;
+    }
 }
 </style>
