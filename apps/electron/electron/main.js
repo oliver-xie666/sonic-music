@@ -36,7 +36,29 @@ if (!gotTheLock) {
     });
 }
 
+// 在 app ready 之前读取设置并应用
+const settings = store.get('settings');
+if (settings?.gpuAcceleration === 'on') {
+    app.disableHardwareAcceleration();
+    app.commandLine.appendSwitch('enable-transparent-visuals');
+    app.commandLine.appendSwitch('disable-gpu-compositing');
+}
+
+if (settings?.highDpi === 'on') {
+    app.commandLine.appendSwitch('high-dpi-support', '1');
+    app.commandLine.appendSwitch('force-device-scale-factor', settings?.dpiScale || '1');
+}
+
 app.on('ready', () => {
+    // 在 ready 之后启动需要 app 准备好的功能
+    if (settings?.preventAppSuspension === 'on') {
+        blockerId = powerSaveBlocker.start('prevent-display-sleep');
+    }
+
+    if (settings?.apiMode === 'on') {
+        apiService.start();
+    }
+
     startApiServer().then(() => {
         try {
             mainWindow = createWindow();
@@ -81,26 +103,6 @@ app.on('ready', () => {
         });
     });
 });
-
-const settings = store.get('settings');
-if (settings?.gpuAcceleration === 'on') {
-    app.disableHardwareAcceleration();
-    app.commandLine.appendSwitch('enable-transparent-visuals');
-    app.commandLine.appendSwitch('disable-gpu-compositing');
-}
-
-if (settings?.preventAppSuspension === 'on') {
-    blockerId = powerSaveBlocker.start('prevent-display-sleep');
-}
-
-if (settings?.highDpi === 'on') {
-    app.commandLine.appendSwitch('high-dpi-support', '1');
-    app.commandLine.appendSwitch('force-device-scale-factor', settings?.dpiScale || '1');
-}
-
-if (settings?.apiMode === 'on') {
-    apiService.start();
-}
 
 // 即将退出
 app.on('before-quit', () => {
