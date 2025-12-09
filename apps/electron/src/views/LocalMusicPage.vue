@@ -1,5 +1,5 @@
 <template>
-  <div class="local-music-page">
+  <div class="local-music-page" :class="$setAnimationClass('animate__fadeIn')">
     <div class="page-header">
       <h1>本地音乐</h1>
       <p class="subtitle">管理您的本地音乐文件</p>

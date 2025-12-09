@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-    <h2 class="section-title">
+  <div class="container" :class="$setAnimationClass('animate__fadeIn')">
+    <h2 class="section-title" :class="$setAnimationClass('animate__fadeInDown')">
       {{ $t('tui-jian') }}
     </h2>
-    <div class="recommendations">
+    <div class="recommendations" :class="$setAnimationClass('animate__fadeInUp')">
       <div class="recommend-card gradient-background">
         <div class="radio-card">
           <div class="radio-left">
@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <h2 class="section-title">
+    <h2 class="section-title" :class="$setAnimationClass('animate__fadeInDown')">
       {{ $t('mei-ri-tui-jian') }}
     </h2>
     <div
@@ -135,6 +135,8 @@
         v-for="(song, index) in songs"
         :key="index"
         class="song-item"
+        :class="$setAnimationClass('animate__fadeInUp')"
+        :style="$setAnimationDelay(index, 30)"
         @click="playSong($getQuality(null, song), song.ori_audio_name, $getCover(song.sizable_cover, 480), song.author_name)"
         @contextmenu.prevent="showContextMenu($event, song)"
       >
@@ -153,7 +155,7 @@
         </div>
       </div>
     </div>
-    <h2 class="section-title">
+    <h2 class="section-title" :class="$setAnimationClass('animate__fadeInDown')">
       {{ $t('tui-jian-ge-dan') }}
     </h2>
     <div class="playlist-grid">
@@ -161,6 +163,8 @@
         v-for="(playlist, index) in special_list"
         :key="index"
         class="playlist-item"
+        :class="$setAnimationClass('animate__fadeInUp')"
+        :style="$setAnimationDelay(index, 50)"
       >
         <router-link
           :to="{

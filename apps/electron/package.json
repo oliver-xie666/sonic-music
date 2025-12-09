@@ -35,14 +35,18 @@
       {
         "from": "build/icons/",
         "to": "icons/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "extraFiles": [
       {
         "from": "api/bin",
         "to": "api/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "public/assets",
@@ -64,7 +68,9 @@
     "protocols": [
       {
         "name": "Sonic Music Protocol",
-        "schemes": ["sonicmusic"]
+        "schemes": [
+          "sonicmusic"
+        ]
       }
     ],
     "win": {
@@ -72,7 +78,10 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ],
       "artifactName": "Sonic_Music_Setup_v${version}.${ext}"
@@ -95,13 +104,18 @@
     "mac": {
       "x64ArchFiles": "*",
       "icon": "build/icons/icon.icns",
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "identity": null,
       "artifactName": "${productName}.${ext}",
       "protocols": [
         {
           "name": "Sonic Music Protocol",
-          "schemes": ["sonicmusic"]
+          "schemes": [
+            "sonicmusic"
+          ]
         }
       ]
     },
@@ -110,7 +124,10 @@
     },
     "linux": {
       "icon": "build/icons/linux_256x256.png",
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "AudioVideo",
       "artifactName": "${productName}.${ext}"
     }
@@ -141,6 +158,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.16",
+    "animate.css": "^4.1.1",
     "electron-is-dev": "^3.0.1",
     "electron-log": "^5.2.0",
     "electron-store": "^10.0.0",

@@ -3,11 +3,12 @@ import { createPinia } from 'pinia';
 import piniaPersistedstate from 'pinia-plugin-persistedstate';
 import App from './App.vue';
 import router from './router/router';
-import { formatMilliseconds, getCover, applyColorTheme, setTheme, getQuality } from '../src/utils/utils';
+import { formatMilliseconds, getCover, applyColorTheme, setTheme, getQuality, setAnimationClass, setAnimationDelay } from '../src/utils/utils';
 import ModalPlugin from './plugins/ModalPlugin';
 import MessagePlugin from './plugins/MessagePlugin';
 import i18n from './utils/i18n';
 import '@/assets/themes/dark.css';
+import 'animate.css';
 import { registerSW } from 'virtual:pwa-register'
 
 const app = createApp(App);
@@ -18,6 +19,8 @@ app.config.globalProperties.$getQuality = getQuality;
 app.config.globalProperties.$formatMilliseconds = formatMilliseconds;
 app.config.globalProperties.$applyColorTheme = applyColorTheme;
 app.config.globalProperties.$setTheme = setTheme;
+app.config.globalProperties.$setAnimationClass = setAnimationClass;
+app.config.globalProperties.$setAnimationDelay = setAnimationDelay;
 app.config.errorHandler = (err, vm, info) => {
   console.error(`全局捕获异常: ${info}`, err);
 };

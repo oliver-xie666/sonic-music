@@ -151,3 +151,21 @@ export const share = (linkUrl) => {
     navigator.clipboard.writeText(encodeString);
     $message.success(i18n.global.t('kou-ling-yi-fu-zhi,kuai-ba-ge-qu-fen-xiang-gei-peng-you-ba'));
 }
+
+// 设置动画类型
+export const setAnimationClass = (type) => {
+    const savedConfig = JSON.parse(localStorage.getItem('settings'));
+    if (savedConfig?.noAnimate) {
+        return '';
+    }
+    return `animate__animated ${type}`;
+};
+
+// 设置动画延时
+export const setAnimationDelay = (index = 0, time = 50) => {
+    const savedConfig = JSON.parse(localStorage.getItem('settings'));
+    if (savedConfig?.noAnimate) {
+        return '';
+    }
+    return `animation-delay: ${index * time}ms`;
+};

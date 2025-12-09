@@ -1,5 +1,5 @@
 <template>
-    <div class="search-page">
+    <div class="search-page" :class="$setAnimationClass('animate__fadeIn')">
         <div class="search-results">
             <h2 class="section-title">{{ $t('sou-suo-jie-guo') }}</h2>
             <!-- 添加搜索类型标签栏 -->

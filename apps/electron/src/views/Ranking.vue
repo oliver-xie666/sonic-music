@@ -1,5 +1,5 @@
 <template>
-    <div class="ranking-container">
+    <div class="ranking-container" :class="$setAnimationClass('animate__fadeIn')">
         <!-- 添加榜单选择区域 -->
         <div class="rank-selector">
             <div 
