@@ -118,4 +118,82 @@
 .nav-button:hover::after {
   opacity: 1;
 }
+
+/* 平板端适配 (≤1024px) */
+@media screen and (max-width: 1024px) {
+  .side-nav {
+    left: 10px;
+    padding: 12px;
+  }
+
+  .nav-button {
+    height: 42px;
+    width: 42px;
+    margin: 6px 0;
+  }
+
+  .nav-button i {
+    font-size: 18px;
+  }
+}
+
+/* 移动端适配 (≤768px) - 底部导航栏 */
+@media screen and (max-width: 768px) {
+  .side-nav {
+    top: auto;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    padding: 10px 15px;
+    border-radius: 20px;
+    width: auto;
+    max-width: calc(100% - 40px);
+  }
+
+  .nav-button {
+    height: 44px;
+    width: 44px;
+    margin: 0 6px;
+  }
+
+  .nav-button i {
+    font-size: 20px;
+  }
+
+  .nav-divider {
+    width: 1px;
+    height: 30px;
+    margin: 0 6px;
+  }
+
+  /* 移动端隐藏 Tooltip */
+  .nav-button::after {
+    display: none;
+  }
+}
+
+/* 小屏手机适配 (≤480px) */
+@media screen and (max-width: 480px) {
+  .side-nav {
+    bottom: 70px;
+    padding: 8px 12px;
+    border-radius: 18px;
+  }
+
+  .nav-button {
+    height: 40px;
+    width: 40px;
+    margin: 0 4px;
+  }
+
+  .nav-button i {
+    font-size: 18px;
+  }
+
+  .nav-divider {
+    height: 26px;
+    margin: 0 4px;
+  }
+}
 </style>

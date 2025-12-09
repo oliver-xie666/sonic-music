@@ -388,4 +388,144 @@ header {
   font-size: 12px;
   color: #666;
 }
+
+/* 平板端适配 (≤1024px) */
+@media screen and (max-width: 1024px) {
+  .header-content {
+    padding: 0 20px 0 15px;
+  }
+
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .app-name {
+    font-size: 18px;
+  }
+
+  .search-bar input {
+    width: 200px;
+  }
+}
+
+/* 移动端适配 (≤768px) */
+@media screen and (max-width: 768px) {
+  header {
+    top: 0;
+    height: 56px;
+  }
+
+  .header-content {
+    padding: 0 15px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-name {
+    font-size: 16px;
+  }
+
+  .header-right {
+    gap: 12px;
+  }
+
+  .search-bar {
+    padding: 6px 12px;
+  }
+
+  .search-bar input {
+    width: 150px;
+    font-size: 13px;
+  }
+
+  .profile {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-menu {
+    top: 46px;
+  }
+}
+
+/* 小屏手机适配 (≤480px) */
+@media screen and (max-width: 480px) {
+  header {
+    height: 52px;
+  }
+
+  .header-content {
+    padding: 0 12px;
+  }
+
+  .header-left {
+    gap: 6px;
+  }
+
+  .logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-name {
+    display: none; /* 隐藏应用名称以节省空间 */
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .search-bar {
+    padding: 5px 10px;
+    border-radius: 16px;
+  }
+
+  .search-bar input {
+    width: 120px;
+    font-size: 12px;
+  }
+
+  .profile {
+    width: 32px;
+    height: 32px;
+  }
+
+  .profile-menu {
+    top: 42px;
+    right: -10px;
+  }
+
+  .modal-content {
+    padding: 15px;
+    max-width: calc(100% - 30px);
+  }
+
+  .modal-content h2 {
+    font-size: 18px;
+  }
+
+  .modal-content p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+/* 超小屏手机适配 (≤375px) */
+@media screen and (max-width: 375px) {
+  .search-bar input {
+    width: 100px;
+  }
+
+  .search-bar i {
+    font-size: 12px;
+  }
+}
 </style>
