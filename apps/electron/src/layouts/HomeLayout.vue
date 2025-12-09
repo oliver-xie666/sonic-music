@@ -147,4 +147,39 @@ a {
     padding: 8px;
     z-index: 1000;
 }
+
+/* 平板端适配 (≤1024px) */
+@media screen and (max-width: 1024px) {
+    main {
+        padding: 20px 20px 150px 90px;
+    }
+}
+
+/* 移动端适配 (≤768px) */
+@media screen and (max-width: 768px) {
+    main {
+        padding: 15px 15px 180px 15px;
+        margin-top: 56px;
+    }
+
+    .network-status {
+        top: 56px;
+        font-size: 14px;
+        padding: 6px;
+    }
+}
+
+/* 小屏手机适配 (≤480px) */
+@media screen and (max-width: 480px) {
+    main {
+        padding: 12px 12px 170px 12px;
+        margin-top: 52px;
+    }
+
+    .network-status {
+        top: 52px;
+        font-size: 13px;
+        padding: 5px;
+    }
+}
 </style>

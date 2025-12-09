@@ -798,3 +798,343 @@
   opacity: 1;
   transform: scale(1) translateY(0);
 }
+
+/* ==================== 响应式布局 ==================== */
+
+/* 平板端适配 (≤1024px) */
+@media screen and (max-width: 1024px) {
+  .player-bar {
+    max-width: 100%;
+    padding: 8px;
+  }
+
+  .album-art {
+    width: 55px;
+    height: 55px;
+    margin-right: 12px;
+  }
+
+  .album-art img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .song-title,
+  .artist {
+    width: 200px;
+  }
+
+  .control-btn {
+    font-size: 22px;
+    padding: 0 8px;
+  }
+
+  .extra-btn {
+    font-size: 15px;
+    padding: 0 6px;
+  }
+
+  .volume-slider {
+    width: 80px;
+  }
+
+  /* 全屏歌词界面 */
+  #lyrics-container {
+    width: 70%;
+    margin-top: 60px;
+  }
+
+  .left-section {
+    width: 45%;
+    margin-top: 100px;
+  }
+
+  .album-art-large img {
+    width: 350px;
+    height: 350px;
+  }
+
+  .vinyl-player {
+    width: 400px;
+    height: 400px;
+  }
+
+  .vinyl-disc {
+    width: 350px;
+    height: 350px;
+  }
+
+  .vinyl-cover {
+    width: 210px;
+    height: 210px;
+  }
+}
+
+/* 移动端适配 (≤768px) */
+@media screen and (max-width: 768px) {
+  .player-container {
+    border-radius: 0;
+  }
+
+  .player-bar {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
+
+  .album-art {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+
+  .album-art img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .song-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .song-title {
+    width: 150px;
+    font-size: 14px;
+  }
+
+  .artist {
+    width: 150px;
+    font-size: 0.85em;
+  }
+
+  .controls {
+    order: 3;
+    width: 100%;
+    margin-top: 8px;
+    justify-content: center;
+  }
+
+  .control-btn {
+    font-size: 20px;
+    padding: 0 8px;
+  }
+
+  .extra-controls {
+    gap: 2px;
+  }
+
+  .extra-btn {
+    font-size: 14px;
+    padding: 0 5px;
+  }
+
+  .volume-control {
+    gap: 6px;
+  }
+
+  .volume-control i {
+    font-size: 16px;
+  }
+
+  .volume-slider {
+    width: 60px;
+  }
+
+  /* 全屏歌词界面 */
+  #lyrics-container {
+    width: 90%;
+    margin-top: 40px;
+    padding: 15px;
+  }
+
+  #lyrics {
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .lyrics-screen {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .close-btn {
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+  }
+
+  .left-section {
+    width: 100%;
+    margin-top: 60px;
+    margin-left: 0;
+  }
+
+  .album-art-large img {
+    width: 280px;
+    height: 280px;
+  }
+
+  .vinyl-player {
+    width: 320px;
+    height: 320px;
+  }
+
+  .vinyl-disc {
+    width: 280px;
+    height: 280px;
+  }
+
+  .vinyl-cover {
+    width: 168px;
+    height: 168px;
+  }
+
+  .tonearm {
+    width: 120px;
+    height: 148px;
+    top: -30px;
+    right: 10px;
+  }
+
+  .song-details {
+    margin-top: 15px;
+  }
+
+  .player-controls {
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .lyrics-mode-btn {
+    right: 15px;
+    top: 8px;
+    font-size: 18px;
+  }
+}
+
+/* 小屏手机适配 (≤480px) */
+@media screen and (max-width: 480px) {
+  .player-bar {
+    padding: 6px 8px;
+  }
+
+  .album-art {
+    width: 45px;
+    height: 45px;
+    margin-right: 8px;
+  }
+
+  .album-art img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .song-title {
+    width: 120px;
+    font-size: 13px;
+  }
+
+  .artist {
+    width: 120px;
+    font-size: 0.8em;
+  }
+
+  .controls {
+    margin-top: 6px;
+  }
+
+  .control-btn {
+    font-size: 18px;
+    padding: 0 6px;
+  }
+
+  .extra-btn {
+    font-size: 13px;
+    padding: 0 4px;
+  }
+
+  .volume-slider {
+    width: 50px;
+  }
+
+  /* 隐藏部分次要控制按钮以节省空间 */
+  .extra-controls .extra-btn:not(.like-btn):not([class*="volume"]) {
+    display: none;
+  }
+
+  /* 全屏歌词界面 */
+  #lyrics-container {
+    width: 95%;
+    margin-top: 30px;
+    padding: 10px;
+  }
+
+  #lyrics {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .lyrics-screen {
+    padding: 10px;
+  }
+
+  .close-btn {
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+  }
+
+  .left-section {
+    margin-top: 50px;
+  }
+
+  .album-art-large img {
+    width: 240px;
+    height: 240px;
+  }
+
+  .vinyl-player {
+    width: 280px;
+    height: 280px;
+  }
+
+  .vinyl-disc {
+    width: 240px;
+    height: 240px;
+  }
+
+  .vinyl-cover {
+    width: 144px;
+    height: 144px;
+  }
+
+  .tonearm {
+    width: 100px;
+    height: 124px;
+    top: -25px;
+    right: 5px;
+  }
+
+  .player-controls {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .player-controls .control-btn {
+    font-size: 20px;
+  }
+
+  .lyrics-mode-btn {
+    right: 10px;
+    top: 6px;
+    font-size: 16px;
+  }
+
+  .speed-menu {
+    font-size: 14px;
+  }
+
+  .speed-option {
+    padding: 5px 12px;
+  }
+}
