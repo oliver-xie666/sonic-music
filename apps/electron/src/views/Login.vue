@@ -361,7 +361,6 @@ const getQrCode = async () => {
 
 // 选择账号登录
 const selectAccount = async (account) => {
-    isPhoneLoginLoading.value = true;
     await phoneLogin(account.userid);
 };
 
