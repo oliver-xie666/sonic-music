@@ -140,6 +140,7 @@
   "license": "MIT",
   "description": "A modern cross-platform music player with multi-source support",
   "devDependencies": {
+    "@fiahfy/icns": "^0.0.7",
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/compiler-sfc": "^3.5.12",
@@ -150,7 +151,10 @@
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.20.0",
     "npm-run-all": "^4.1.5",
+    "png-to-ico": "^3.0.1",
+    "png2icons": "^2.0.1",
     "prettier": "^3.3.3",
+    "sharp": "^0.34.5",
     "vite": "^7.2.6",
     "vite-plugin-pwa": "^1.2.0",
     "vue-loader": "^17.3.1",
