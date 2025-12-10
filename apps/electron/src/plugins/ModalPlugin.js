@@ -38,12 +38,19 @@ export default {
             mountModal();
             modal.value.hideCustomLoading();
         };
+
+        const showCloseConfirmDialog = () => {
+            mountModal();
+            return modal.value.showCloseConfirmDialog();
+        };
+
         window.$modal = {
             alert: customAlert,
             confirm: customConfirm,
             prompt: customPrompt,
             showLoading,
             hideLoading,
+            showCloseConfirmDialog,
         };
     },
 };

@@ -40,7 +40,20 @@
         <!-- 关闭确认弹窗 -->
         <div v-if="showCloseConfirm" class="modal-overlay">
             <div class="modal close-confirm-modal">
-                <h3>{{ i18n.global.t('close-app-title') }}</h3>
+                <div class="close-modal-header">
+                    <div class="close-modal-title">
+                        <svg class="warning-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#ff9800"/>
+                        </svg>
+                        <h3>{{ i18n.global.t('close-app-title') }}</h3>
+                    </div>
+                    <button @click="showCloseConfirm = false" class="close-dialog-btn">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+
                 <p class="close-description">{{ i18n.global.t('close-app-description') }}</p>
 
                 <div class="remember-choice">
@@ -52,15 +65,9 @@
 
                 <div class="buttons close-buttons">
                     <button @click="handleCloseAction('minimize')" class="btn btn-primary">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
-                        </svg>
                         {{ i18n.global.t('minimize-to-tray') }}
                     </button>
                     <button @click="handleCloseAction('close')" class="btn btn-secondary">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-                        </svg>
                         {{ i18n.global.t('exit-app') }}
                     </button>
                 </div>
@@ -280,23 +287,75 @@ defineExpose({
 
 /* 关闭确认弹窗样式 */
 .close-confirm-modal {
-    max-width: 450px;
-    padding: 35px;
+    width: 400px;
+    max-width: 90vw;
+    padding: 0;
+    text-align: left;
+}
+
+.close-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.close-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-modal-title h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.warning-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.close-dialog-btn {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.close-dialog-btn:hover {
+    background: #f5f5f5;
+}
+
+.close-dialog-btn svg {
+    width: 20px;
+    height: 20px;
+    color: #999;
 }
 
 .close-description {
     color: #666;
-    font-size: 15px;
-    margin: 15px 0 25px;
-    line-height: 1.6;
+    font-size: 14px;
+    margin: 0;
+    padding: 20px 25px 15px;
+    line-height: 1.5;
+    text-align: left;
 }
 
 .remember-choice {
-    margin: 20px 0;
-    padding: 15px;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
+    margin: 0;
+    padding: 0 25px 20px;
+    background: transparent;
+    border: none;
 }
 
 .checkbox-label {
@@ -307,62 +366,70 @@ defineExpose({
 }
 
 .checkbox-input {
-    width: 18px;
-    height: 18px;
-    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
     cursor: pointer;
     accent-color: var(--primary-color);
 }
 
 .checkbox-text {
-    color: #555;
+    color: #666;
     font-size: 14px;
 }
 
 .close-buttons {
     display: flex;
     gap: 12px;
-    margin-top: 25px;
-    flex-direction: column;
+    padding: 15px 25px 20px;
+    flex-direction: row;
+    justify-content: flex-end;
+    border-top: 1px solid #f0f0f0;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    background-color: var(--primary-color);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     font-weight: 500;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2563EB, #7C3AED);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #EF4444, #DC2626);
-    color: white;
+    background: #f5f5f5;
+    color: #666;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     font-weight: 500;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 8px 20px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, #DC2626, #B91C1C);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-.btn-icon {
-    width: 18px;
-    height: 18px;
+    background: #eeeeee;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #d0d0d0;
 }
 
 .btn:active {
