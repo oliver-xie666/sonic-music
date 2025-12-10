@@ -192,5 +192,10 @@
   "qie-huan-bo-fang-mo-shi": "Switch playback mode",
   "pwa-app": "PWA Application",
   "install": "Install",
-  "yin-pin-jia-zai-shi-bai": "Music loading failed"
+  "yin-pin-jia-zai-shi-bai": "Music loading failed",
+  "close-app-title": "Close Application",
+  "close-app-description": "Please choose how to close",
+  "minimize-to-tray": "Minimize to Tray",
+  "exit-app": "Exit Application",
+  "remember-choice": "Remember my choice"
 }

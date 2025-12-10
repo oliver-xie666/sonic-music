@@ -3,17 +3,45 @@
     <div class="window-controls" v-if="isElectron && !isMac">
       <button class="control-button" @click="minimizeWindow" id="minBtn"></button>
       <button class="control-button" @click="maximizeWindow" id="maxBtn"></button>
-      <button class="control-button" @click="closeWindow" id="closeBtn"></button>
+      <button class="control-button" @click="handleClose" id="closeBtn"></button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useSettingsStore } from '@/stores/settings';
+
 const isElectron = typeof window !== 'undefined' && typeof window.electron !== 'undefined';
 const isMac = isElectron && window.electron.platform == 'darwin';
-const closeWindow = () => window.electron.ipcRenderer.send('window-control', 'close');
+const settingsStore = useSettingsStore();
+
 const minimizeWindow = () => window.electron.ipcRenderer.send('window-control', 'minimize');
 const maximizeWindow = () => window.electron.ipcRenderer.send('window-control', 'maximize');
+
+const handleClose = async () => {
+  const { closeAction } = settingsStore;
+
+  if (closeAction === 'minimize') {
+    // 直接最小化到托盘
+    window.electron.ipcRenderer.send('window-control', 'close');
+  } else if (closeAction === 'close') {
+    // 直接退出应用
+    window.electron.ipcRenderer.send('window-control', 'close');
+  } else {
+    // 显示确认弹窗
+    const result = await window.$modal.showCloseConfirmDialog();
+
+    if (result) {
+      // 如果用户选择记住选择，保存到设置
+      if (result.remember) {
+        settingsStore.setCloseAction(result.action);
+      }
+
+      // 执行相应的操作
+      window.electron.ipcRenderer.send('window-control', 'close');
+    }
+  }
+};
 </script>
 
 <style scoped>
