@@ -11,6 +11,7 @@ dist
 dist_electron
 dev-dist
 build
+!apps/electron/build
 .next
 out
 
