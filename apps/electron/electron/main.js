@@ -195,6 +195,12 @@ ipcMain.on('custom-shortcut', (event) => {
     registerShortcut();
 });
 
+// 重启应用
+ipcMain.on('restart', () => {
+    app.relaunch();
+    app.exit(0);
+});
+
 ipcMain.on('lyrics-data', (event, lyricsData) => {
     const lyricsWindow = mainWindow.lyricsWindow;
     if (lyricsWindow) {
