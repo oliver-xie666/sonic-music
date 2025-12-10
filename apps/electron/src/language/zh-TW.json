@@ -192,5 +192,10 @@
   "qie-huan-bo-fang-mo-shi": "切換播放模式",
   "pwa-app": "PWA應用程序",
   "install": "安裝",
-  "yin-pin-jia-zai-shi-bai": "音頻加載失敗"
+  "yin-pin-jia-zai-shi-bai": "音頻加載失敗",
+  "close-app-title": "關閉應用程序",
+  "close-app-description": "請選擇關閉方式",
+  "minimize-to-tray": "最小化到托盤",
+  "exit-app": "退出應用程序",
+  "remember-choice": "記住我的選擇"
 }
