@@ -428,13 +428,13 @@ export function startApiServer() {
         } else {
             switch (process.platform) {
                 case 'win32':
-                    apiPath = path.join(process.resourcesPath, '../api', 'app_win.exe');
+                    apiPath = path.join(process.resourcesPath, 'api', 'app_win.exe');
                     break;
                 case 'darwin':
-                    apiPath = path.join(process.resourcesPath, '../api', 'app_macos');
+                    apiPath = path.join(process.resourcesPath, 'api', 'app_macos');
                     break;
                 case 'linux':
-                    apiPath = path.join(process.resourcesPath, '../api', 'app_linux');
+                    apiPath = path.join(process.resourcesPath, 'api', 'app_linux');
                     break;
                 default:
                     reject(new Error(`Unsupported platform: ${process.platform}`));
@@ -443,12 +443,14 @@ export function startApiServer() {
         }
 
         log.info(`API路径: ${apiPath}`);
+        log.info(`process.resourcesPath: ${process.resourcesPath}`);
 
         if (!fs.existsSync(apiPath)) {
             const error = new Error(`API可执行文件未找到：${apiPath}`);
             log.error(error.message);
-            reject(error);
-            return;
+            // 如果 API 文件不存在，直接 resolve 而不是 reject，让应用继续运行
+            log.warn('API 服务未找到，应用将在无 API 模式下运行');
+            return resolve();
         }
 
         // 启动 API 服务器进程
@@ -464,28 +466,56 @@ export function startApiServer() {
             }
         }
 
+        let resolved = false;
+        const startTimeout = setTimeout(() => {
+            if (!resolved) {
+                resolved = true;
+                log.warn('API 服务启动超时，但应用将继续运行');
+                resolve();
+            }
+        }, 10000); // 10秒超时
+
         apiProcess = spawn(apiPath, Args, { windowsHide: true });
 
         apiProcess.stdout.on('data', (data) => {
             log.info(`API输出: ${data}`);
-            if (data.toString().includes('running')) {
+            if (!resolved && data.toString().includes('running')) {
+                resolved = true;
+                clearTimeout(startTimeout);
                 console.log('API服务器已启动');
                 resolve();
             }
         });
 
         apiProcess.stderr.on('data', (data) => {
-            log.error(`API 错误: ${data}`);
-            reject(data);
+            const errorMsg = data.toString();
+            log.error(`API 错误: ${errorMsg}`);
+            // 只有在严重错误时才 reject，警告信息不应该导致启动失败
+            if (!resolved && errorMsg.includes('FATAL')) {
+                resolved = true;
+                clearTimeout(startTimeout);
+                reject(new Error(errorMsg));
+            }
         });
 
         apiProcess.on('close', (code) => {
             log.info(`API 关闭，退出码: ${code}`);
+            if (!resolved && code !== 0) {
+                resolved = true;
+                clearTimeout(startTimeout);
+                log.warn(`API 进程异常退出，退出码: ${code}，应用将继续运行`);
+                resolve();
+            }
         });
 
         apiProcess.on('error', (error) => {
             log.error('启动 API 失败:', error);
-            reject(error);
+            if (!resolved) {
+                resolved = true;
+                clearTimeout(startTimeout);
+                log.warn('API 启动失败，应用将在无 API 模式下运行');
+                resolve(); // 改为 resolve 而不是 reject，让应用继续运行
+            }
         });
     });
 }
