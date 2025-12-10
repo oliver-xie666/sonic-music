@@ -212,5 +212,10 @@
   "fen-zhong": "分钟",
   "le-ling": "乐龄",
   "nian": "年",
-  "ting-ge-shi-chang": "听歌时长"
+  "ting-ge-shi-chang": "听歌时长",
+  "close-app-title": "关闭应用",
+  "close-app-description": "请选择关闭方式",
+  "minimize-to-tray": "最小化到托盘",
+  "exit-app": "退出应用",
+  "remember-choice": "记住我的选择"
 }

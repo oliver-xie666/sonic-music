@@ -36,6 +36,36 @@
             <div class="loading-spinner"></div>
             <p class="loading-text">{{ i18n.global.t('shao-nv-qi-dao-zhong') }}</p>
         </div>
+
+        <!-- 关闭确认弹窗 -->
+        <div v-if="showCloseConfirm" class="modal-overlay">
+            <div class="modal close-confirm-modal">
+                <h3>{{ i18n.global.t('close-app-title') }}</h3>
+                <p class="close-description">{{ i18n.global.t('close-app-description') }}</p>
+
+                <div class="remember-choice">
+                    <label class="checkbox-label">
+                        <input type="checkbox" v-model="rememberChoice" class="checkbox-input" />
+                        <span class="checkbox-text">{{ i18n.global.t('remember-choice') }}</span>
+                    </label>
+                </div>
+
+                <div class="buttons close-buttons">
+                    <button @click="handleCloseAction('minimize')" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+                        </svg>
+                        {{ i18n.global.t('minimize-to-tray') }}
+                    </button>
+                    <button @click="handleCloseAction('close')" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                        </svg>
+                        {{ i18n.global.t('exit-app') }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -54,12 +84,14 @@ const showAlert = ref(false);
 const showConfirm = ref(false);
 const showPrompt = ref(false);
 const showLoading = ref(false);
+const showCloseConfirm = ref(false);
 
 // 消息内容
 const alertMessage = ref('');
 const confirmMessage = ref('');
 const promptMessage = ref('');
 const promptInput = ref('');
+const rememberChoice = ref(false);
 
 // Alert 方法
 let alertResolve;
@@ -120,13 +152,29 @@ const hideCustomLoading = () => {
     showLoading.value = false;
 };
 
+// 关闭确认弹窗方法
+let closeConfirmResolve;
+const showCloseConfirmDialog = () => {
+    showCloseConfirm.value = true;
+    rememberChoice.value = false;
+    return new Promise((resolve) => {
+        closeConfirmResolve = resolve;
+    });
+};
+
+const handleCloseAction = (action) => {
+    showCloseConfirm.value = false;
+    closeConfirmResolve({ action, remember: rememberChoice.value });
+};
+
 // 暴露方法供父组件使用
 defineExpose({
     customAlert,
     customConfirm,
     customPrompt,
     showCustomLoading,
-    hideCustomLoading
+    hideCustomLoading,
+    showCloseConfirmDialog
 });
 </script>
 
@@ -227,6 +275,122 @@ defineExpose({
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* 关闭确认弹窗样式 */
+.close-confirm-modal {
+    max-width: 450px;
+    padding: 35px;
+}
+
+.close-description {
+    color: #666;
+    font-size: 15px;
+    margin: 15px 0 25px;
+    line-height: 1.6;
+}
+
+.remember-choice {
+    margin: 20px 0;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-input {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.checkbox-text {
+    color: #555;
+    font-size: 14px;
+}
+
+.close-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+    flex-direction: column;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563EB, #7C3AED);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #DC2626, #B91C1C);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.btn-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* 暗色主题适配 */
+@media (prefers-color-scheme: dark) {
+    .modal {
+        background-color: #1f2937;
+        color: #f3f4f6;
+    }
+
+    .modal h3 {
+        color: #60a5fa;
+    }
+
+    .close-description {
+        color: #d1d5db;
+    }
+
+    .checkbox-text {
+        color: #d1d5db;
+    }
+
+    .remember-choice {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+        border-color: rgba(59, 130, 246, 0.2);
     }
 }
 </style>
