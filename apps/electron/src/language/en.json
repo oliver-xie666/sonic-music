@@ -106,6 +106,7 @@
   "tong-yi": "agree",
   "tong-yi-ji-xu-shi-yong-ben-xiang-mu-nin-ji-jie-shou-yi-shang-tiao-kuan-sheng-ming-nei-rong": "By agreeing to continue using this project, you accept the above terms and statements.",
   "tui-chu": "quit",
+  "tui-chu-deng-lu": "Logout",
   "wo-chuang-jian-de-ge-dan": "Playlist created by me",
   "wo-guan-zhu-de-ge-shou": "Singer I follow",
   "wo-shou-cang-de-ge-dan": "My collection of playlists",
@@ -197,5 +198,10 @@
   "close-app-description": "Please choose how to close",
   "minimize-to-tray": "Minimize to Tray",
   "exit-app": "Exit Application",
-  "remember-choice": "Remember my choice"
+  "remember-choice": "Remember my choice",
+  "you-ke": "Guest",
+  "zhu-ti-qie-huan": "Theme",
+  "zhu-ti": "Theme",
+  "zhong-qi": "Restart",
+  "shua-xin": "Refresh"
 }

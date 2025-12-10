@@ -105,6 +105,7 @@
   "tong-yi": "동의하다",
   "tong-yi-ji-xu-shi-yong-ben-xiang-mu-nin-ji-jie-shou-yi-shang-tiao-kuan-sheng-ming-nei-rong": "이 프로젝트를 계속 사용하는 데 동의하면 위의 이용 약관에 동의하는 것입니다.",
   "tui-chu": "그만두다",
+  "tui-chu-deng-lu": "로그아웃",
   "wo-chuang-jian-de-ge-dan": "내가 만든 재생목록",
   "wo-guan-zhu-de-ge-shou": "내가 팔로우하는 가수",
   "wo-shou-cang-de-ge-dan": "내 재생목록 모음",
@@ -197,5 +198,10 @@
   "close-app-description": "닫는 방법을 선택하세요",
   "minimize-to-tray": "트레이로 최소화",
   "exit-app": "애플리케이션 종료",
-  "remember-choice": "선택 기억하기"
+  "remember-choice": "선택 기억하기",
+  "you-ke": "게스트",
+  "zhu-ti-qie-huan": "테마",
+  "zhu-ti": "테마",
+  "zhong-qi": "재시작",
+  "shua-xin": "새로 고침"
 }

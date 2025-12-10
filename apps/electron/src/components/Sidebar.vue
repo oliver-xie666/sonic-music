@@ -21,6 +21,12 @@
     <router-link to="/local-music" class="nav-button" :class="{ active: $route.path === '/local-music' }" data-tip="本地音乐">
       <i class="fas fa-folder"></i>
     </router-link>
+
+    <div class="nav-divider"></div>
+
+    <router-link to="/settings" class="nav-button" :class="{ active: $route.path === '/settings' }" data-tip="设置">
+      <i class="fas fa-cog"></i>
+    </router-link>
   </div>
 </template>
 

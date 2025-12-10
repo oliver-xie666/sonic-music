@@ -23,35 +23,67 @@
             alt="Profile Picture"
           >
           <div v-if="showProfile" class="profile-menu">
-          <ul>
-            <li>
-              <router-link to="/settings">
-                <i class="fas fa-cog" /> {{ $t('she-zhi') }}
-              </router-link>
-            </li>
-            <li>
-              <a v-if="MoeAuth.isAuthenticated" @click="logout">
-                <i class="fas fa-sign-out-alt" />{{ $t('tui-chu') }}
-              </a>
-              <router-link v-else to="/login">
-                <i class="fas fa-sign-in-alt" /> {{ $t('deng-lu') }}
-              </router-link>
-            </li>
-            <li>
-              <a
-                style="position: relative;"
-                @click="openRegisterUrl(downloadUrl || 'https://github.com/oliver-xie666/sonic-music/releases')"
+            <!-- 用户信息区域 -->
+            <div class="user-info-header">
+              <img
+                :src="MoeAuth.UserInfo ? MoeAuth.UserInfo.pic : './assets/images/profile.jpg'"
+                alt="Profile"
+                class="user-avatar"
               >
-                <i class="fab fa-github" /> {{ $t('geng-xin') }}
-                <i v-if="showNewBadge" class="new-badge">new</i>
-              </a>
-            </li>
-            <li>
-              <a @click="Disclaimer()">
-                <i class="fas fa-info-circle" /> {{ $t('guan-yu') }}
-              </a>
-            </li>
-          </ul>
+              <div class="user-details">
+                <p class="user-name">{{ MoeAuth.UserInfo ? MoeAuth.UserInfo.nickname : $t('you-ke') }}</p>
+              </div>
+            </div>
+
+            <!-- 菜单项 -->
+            <ul>
+              <li>
+                <router-link to="/settings">
+                  <i class="fas fa-cog" /> {{ $t('she-zhi') }}
+                </router-link>
+              </li>
+              <li>
+                <a v-if="MoeAuth.isAuthenticated" @click="logout">
+                  <i class="fas fa-sign-out-alt" /> {{ $t('tui-chu-deng-lu') }}
+                </a>
+                <router-link v-else to="/login">
+                  <i class="fas fa-sign-in-alt" /> {{ $t('deng-lu') }}
+                </router-link>
+              </li>
+              <li class="theme-toggle-item" @click.stop>
+                <span class="theme-label">
+                  <i :class="isDarkTheme ? 'fas fa-moon' : 'fas fa-sun'" /> {{ $t('zhu-ti') }}
+                </span>
+                <label class="theme-switch" @click.stop>
+                  <input type="checkbox" :checked="isDarkTheme" @change="toggleTheme">
+                  <span class="slider"></span>
+                </label>
+              </li>
+              <!-- <li v-if="isElectron">
+                <a @click="restartApp">
+                  <i class="fas fa-redo" /> {{ $t('zhong-qi') }}
+                </a>
+              </li> -->
+              <li>
+                <a @click="refreshPage">
+                  <i class="fas fa-sync-alt" /> {{ $t('shua-xin') }}
+                </a>
+              </li>
+              <li>
+                <a
+                  style="position: relative;"
+                  @click="openRegisterUrl(downloadUrl || 'https://github.com/oliver-xie666/sonic-music/releases')"
+                >
+                  <i class="fab fa-github" /> {{ $t('geng-xin') }}
+                  <i v-if="showNewBadge" class="new-badge">new</i>
+                </a>
+              </li>
+              <li>
+                <a @click="Disclaimer()">
+                  <i class="fas fa-info-circle" /> {{ $t('guan-yu') }}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -94,6 +126,8 @@ const downloadUrl = ref('');
 const appVersion = ref('');
 const platform = ref('');
 const showProfile = ref(false);
+const isDarkTheme = ref(false);
+const isElectron = typeof window !== 'undefined' && typeof window.electron !== 'undefined';
 
 onMounted(() => {
   if (window.electron) {
@@ -105,6 +139,11 @@ onMounted(() => {
     });
   }
   document.addEventListener('click', handleClickOutside);
+
+  // 初始化主题
+  const savedTheme = localStorage.getItem('theme');
+  isDarkTheme.value = savedTheme === 'dark';
+  document.documentElement.classList.toggle('dark', isDarkTheme.value);
 });
 
 onUnmounted(() => {
@@ -175,6 +214,25 @@ const isVersionLower = (current, latest) => {
     }
   }
   return false;
+};
+
+// 主题切换
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  document.documentElement.classList.toggle('dark', isDarkTheme.value);
+  localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
+};
+
+// 重启应用（仅 Electron）
+const restartApp = () => {
+  if (window.electron && window.electron.ipcRenderer) {
+    window.electron.ipcRenderer.send('restart');
+  }
+};
+
+// 刷新页面
+const refreshPage = () => {
+  window.location.reload();
 };
 </script>
 
@@ -254,8 +312,8 @@ header {
 }
 
 .profile {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   position: relative;
@@ -273,45 +331,178 @@ header {
   position: absolute;
   top: 50px;
   right: 0;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 10px;
-  width: 150px;
+  background-color: var(--background-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 0;
+  width: 220px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   animation: fadeInOut 0.3s ease-in-out;
+  overflow: hidden;
 }
 
 @keyframes fadeInOut {
   0% {
     opacity: 0;
+    transform: translateY(-10px);
   }
   100% {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
+/* 用户信息区域 */
+.user-info-header {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.user-info-header img {
+  width: 30px;
+}
+
+.user-info-header:hover {
+  background-color: #f5f5f5;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 菜单列表 */
 .profile-menu ul {
   list-style: none;
-  padding: 0;
+  padding: 8px 0;
+  margin: 0;
+}
+
+.profile-menu li {
   margin: 0;
 }
 
 .profile-menu li a {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   cursor: pointer;
-  padding: 7px 5px;
-  border-radius: 5px;
-  color: #000;
+  padding: 10px 15px;
+  color: var(--text-color);
   text-decoration: none;
+  transition: background-color 0.2s;
+  font-size: 14px;
 }
 
 .profile-menu li a:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--hover-color);
+}
+
+.profile-menu li a i {
+  width: 18px;
+  font-size: 16px;
+  color: var(--secondary-color);
+}
+
+/* 主题切换项特殊样式 */
+.theme-toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  cursor: default;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle-item:hover {
+  background-color: #f5f5f5;
+}
+
+.theme-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.theme-label i {
+  width: 18px;
+  font-size: 16px;
+  color: var(--secondary-color);
+}
+
+/* Switch 开关样式 */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.theme-switch input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+.theme-switch input:checked + .slider:before {
+  transform: translateX(18px);
 }
 
 .modal-overlay {

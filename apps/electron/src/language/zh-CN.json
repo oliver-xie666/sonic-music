@@ -86,6 +86,7 @@
   "sou-suo-yin-le-ge-shou-ge-dan": "搜索音乐、歌手、歌单、分享码...",
   "she-zhi": "设置",
   "tui-chu": "退出",
+  "tui-chu-deng-lu": "退出登录",
   "deng-lu": "登录",
   "geng-xin": "更新",
   "guan-yu": "关于",
@@ -217,5 +218,10 @@
   "close-app-description": "请选择关闭方式",
   "minimize-to-tray": "最小化到托盘",
   "exit-app": "退出应用",
-  "remember-choice": "记住我的选择"
+  "remember-choice": "记住我的选择",
+  "you-ke": "游客",
+  "zhu-ti-qie-huan": "主题切换",
+  "zhu-ti": "主题",
+  "zhong-qi": "重启",
+  "shua-xin": "刷新"
 }
