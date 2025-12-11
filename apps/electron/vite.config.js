@@ -87,6 +87,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 8080,
+    strictPort: false, // 端口被占用时自动尝试下一个可用端口
   },
   resolve: {
     alias: {

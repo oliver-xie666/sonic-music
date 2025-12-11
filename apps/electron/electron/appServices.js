@@ -71,7 +71,8 @@ export function createWindow() {
     }
 
     if (isDev) {
-        mainWindow.loadURL('http://localhost:8080');
+        const devPort = process.env.VITE_DEV_SERVER_PORT || '8080';
+        mainWindow.loadURL(`http://localhost:${devPort}`);
         mainWindow.webContents.openDevTools();
     } else {
         if(savedConfig?.networkMode == 'devnet'){ //开发网
@@ -198,7 +199,8 @@ export function createLyricsWindow() {
         mainWindow.lyricsWindow = null;
     });
     if (isDev) {
-        lyricsWindow.loadURL('http://localhost:8080/#/lyrics');
+        const devPort = process.env.VITE_DEV_SERVER_PORT || '8080';
+        lyricsWindow.loadURL(`http://localhost:${devPort}/#/lyrics`);
         lyricsWindow.webContents.openDevTools({ mode: 'detach' });
     } else {
         lyricsWindow.loadFile(path.join(__dirname, '../dist/index.html'), {
