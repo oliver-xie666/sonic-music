@@ -12,28 +12,61 @@
             </div>
         </div>
         <div class="player-bar">
-            <div class="album-art" @click="toggleLyrics(currentSong.hash, currentTime)">
-                <img v-if="currentSong.img" :src="currentSong.img" alt="Album Art" />
-                <i v-else class="fas fa-music"></i>
+            <!-- 左侧：封面和歌曲信息 -->
+            <div class="left-section">
+                <div class="album-art" @click="toggleLyrics(currentSong.hash, currentTime)">
+                    <img v-if="currentSong.img" :src="currentSong.img" alt="Album Art" />
+                    <i v-else class="fas fa-music"></i>
+                </div>
+                <div class="song-info" @click="toggleLyrics(currentSong.hash, currentTime)">
+                    <div class="song-title">{{ currentSong?.name || "Sonic Music" }}</div>
+                    <div class="artist">{{ currentSong?.author || "oliver-xie666" }}</div>
+                </div>
             </div>
-            <div class="song-info" @click="toggleLyrics(currentSong.hash, currentTime)">
-                <div class="song-title">{{ currentSong?.name || "Sonic Music" }}</div>
-                <div class="artist">{{ currentSong?.author || "oliver-xie666" }}</div>
-            </div>
+
+            <!-- 中间：播放控制按钮 -->
             <div class="controls">
-                <button class="control-btn" @click="playSongFromQueue('previous')">
+                <button class="extra-btn like-btn" title="我喜欢" @click="playlistSelect.toLike()">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button class="control-btn prev-btn" @click="playSongFromQueue('previous')">
                     <i class="fas fa-step-backward"></i>
                 </button>
-                <button class="control-btn" @click="togglePlayPause">
+                <button class="control-btn play-btn" @click="togglePlayPause">
                     <i :class="playing ? 'fas fa-pause' : 'fas fa-play'"></i>
                 </button>
-                <button class="control-btn" @click="playSongFromQueue('next')">
+                <button class="control-btn next-btn" @click="playSongFromQueue('next')">
                     <i class="fas fa-step-forward"></i>
                 </button>
+                <button class="extra-btn desktop-lyrics-btn" title="桌面歌词" v-if="isElectron()" @click="desktopLyrics">
+                    <i class="fas">词</i>
+                </button>
             </div>
+
+            <!-- 右侧：功能按钮 -->
             <div class="extra-controls">
-                <button class="extra-btn" title="桌面歌词" v-if="isElectron()" @click="desktopLyrics"><i
-                        class="fas">词</i></button>
+                <!-- 音量控制 -->
+                <div class="volume-control" @wheel="handleVolumeScroll">
+                    <i :class="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'" @click="toggleMute" class="volume-icon"></i>
+                    <div class="volume-slider-vertical">
+                        <div class="volume-percentage">{{ Math.round(volume) }}%</div>
+                        <div class="volume-track" @click="onVolumeTrackClick" @mousedown="onVolumeTrackMouseDown">
+                            <div class="volume-fill" :style="{ height: volume + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="extra-btn" @click="togglePlaybackMode">
+                    <i v-if="currentPlaybackModeIndex != '2'" :class="currentPlaybackMode.icon"
+                        :title="currentPlaybackMode.title"></i>
+                    <span v-else class="loop-icon" :title="currentPlaybackMode.title">
+                        <i class="fas fa-repeat"></i>
+                        <sup>1</sup>
+                    </span>
+                </button>
+                <button class="extra-btn" title="收藏至" @click="playlistSelect.fetchPlaylists()">
+                    <i class="fas fa-add"></i>
+                </button>
                 <div class="playback-speed">
                     <button class="extra-btn" @click="toggleSpeedMenu" title="播放速度">
                         <i class="fas fa-tachometer-alt"></i>
@@ -45,29 +78,9 @@
                         </div>
                     </div>
                 </div>
-                <button class="extra-btn" title="我喜欢" @click="playlistSelect.toLike()"><i
-                        class="fas fa-heart"></i></button>
-                <button class="extra-btn" title="收藏至" @click="playlistSelect.fetchPlaylists()"><i
-                        class="fas fa-add"></i></button>
-                <button class="extra-btn" title="分享歌曲" @click="share('share?hash=' + currentSong.hash)"><i
-                        class="fas fa-share"></i></button>
-                <button class="extra-btn" @click="togglePlaybackMode">
-                    <i v-if="currentPlaybackModeIndex != '2'" :class="currentPlaybackMode.icon"
-                        :title="currentPlaybackMode.title"></i>
-                    <span v-else class="loop-icon" :title="currentPlaybackMode.title">
-                        <i class="fas fa-repeat"></i>
-                        <sup>1</sup>
-                    </span>
+                <button class="extra-btn" @click="queueList.openQueue()">
+                    <i class="fas fa-list"></i>
                 </button>
-                <button class="extra-btn" @click="queueList.openQueue()"><i class="fas fa-list"></i></button>
-                <!-- 音量控制 -->
-                <div class="volume-control" @wheel="handleVolumeScroll">
-                    <i :class="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'" @click="toggleMute"></i>
-                    <div class="volume-slider" @mousedown="onDragStart">
-                        <div class="volume-progress" :style="{ width: volume + '%' }"></div>
-                        <input type="range" min="0" max="100" v-model="volume" @input="changeVolume" />
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -671,43 +684,51 @@ const handleRandomPlayback = (direction, currentIndex) => {
     }
 };
 
-// 音量拖动相关函数
-const setVolumeOnClick = (event) => {
-    const slider = event.target.closest('.volume-slider');
-    if (slider) {
-        const sliderWidth = slider.offsetWidth;
-        const offsetX = event.offsetX;
-        volume.value = Math.round((offsetX / sliderWidth) * 100);
+// 竖向音量控制相关函数
+const volumeTrackRef = ref(null);
+const isVolumeDragging = ref(false);
+
+const setVolumeFromVertical = (event) => {
+    const track = event.target.closest('.volume-track');
+    if (!track) return;
+
+    const rect = track.getBoundingClientRect();
+    const offsetY = rect.bottom - event.clientY;
+    const trackHeight = rect.height;
+    const newVolume = Math.max(0, Math.min(100, Math.round((offsetY / trackHeight) * 100)));
+    volume.value = newVolume;
+    changeVolume();
+    console.log('[PlayerControl] 竖向设置音量:', volume.value, '实际audio.volume:', audio.volume);
+};
+
+const onVolumeTrackClick = (event) => {
+    setVolumeFromVertical(event);
+};
+
+const onVolumeTrackMouseDown = (event) => {
+    isVolumeDragging.value = true;
+    volumeTrackRef.value = event.target.closest('.volume-track');
+    setVolumeFromVertical(event);
+    document.addEventListener('mousemove', onVolumeDrag);
+    document.addEventListener('mouseup', onVolumeDragEnd);
+};
+
+const onVolumeDrag = (event) => {
+    if (isVolumeDragging.value && volumeTrackRef.value) {
+        const rect = volumeTrackRef.value.getBoundingClientRect();
+        const offsetY = rect.bottom - event.clientY;
+        const trackHeight = rect.height;
+        const newVolume = Math.max(0, Math.min(100, Math.round((offsetY / trackHeight) * 100)));
+        volume.value = newVolume;
         changeVolume();
-        console.log('[PlayerControl] 点击设置音量:', volume.value, '实际audio.volume:', audio.volume);
     }
 };
 
-const onDragStart = (event) => {
-    sliderElement.value = event.target.closest('.volume-slider');
-    if (sliderElement.value) {
-        isDragging.value = true;
-        setVolumeOnClick(event);
-        document.addEventListener('mousemove', onDrag);
-        document.addEventListener('mouseup', onDragEnd);
-    }
-};
-const onDrag = (event) => {
-    if (isDragging.value && sliderElement.value) {
-        const sliderWidth = sliderElement.value.offsetWidth;
-        const rect = sliderElement.value.getBoundingClientRect();
-        const offsetX = event.clientX - rect.left;
-        const newVolume = Math.max(0, Math.min(100, Math.round((offsetX / sliderWidth) * 100)));
-        volume.value = newVolume;
-        changeVolume();
-        console.log('[PlayerControl] 拖动设置音量:', volume.value, '实际audio.volume:', audio.volume);
-    }
-};
-const onDragEnd = () => {
-    isDragging.value = false;
-    sliderElement.value = null;
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', onDragEnd);
+const onVolumeDragEnd = () => {
+    isVolumeDragging.value = false;
+    volumeTrackRef.value = null;
+    document.removeEventListener('mousemove', onVolumeDrag);
+    document.removeEventListener('mouseup', onVolumeDragEnd);
 };
 
 // 音量滚轮事件

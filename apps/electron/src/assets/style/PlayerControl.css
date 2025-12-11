@@ -100,76 +100,141 @@
 .player-bar {
     display: flex;
     align-items: center;
-    padding: 10px;
+    justify-content: space-between;
+    padding: 10px 20px;
     width: 100%;
-    max-width: 880px;
+    max-width: 100%;
+    gap: 20px;
 }
 
-.album-art {
+/* 底部播放控制栏 - 左侧区域：封面和歌曲信息 */
+.player-bar .left-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.player-bar .album-art {
     width: 60px;
     height: 60px;
-    border-radius: 5px;
-    margin-right: 15px;
+    border-radius: 8px;
     background-color: #ddd;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
-.album-art img {
-    width: 64px;
-    height: 64px;
-    border-radius: 5px;
+.player-bar .album-art img {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
 }
 
-.album-art i {
+.player-bar .album-art i {
     font-size: 24px;
     color: #666;
 }
 
-.song-info {
-    flex-grow: 0;
+.player-bar .song-info {
     cursor: pointer;
-    margin-right: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
 }
 
-.song-title {
+.player-bar .song-title {
     font-weight: bold;
-    margin-bottom: 5px;
-    width: 300px;
+    font-size: 14px;
+    color: #333;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.fa-volume-up {
-    width: 10px;
-}
-
-.artist {
-    font-size: 0.9em;
-    color: #c3c3c3;
-    width: 300px;
+.player-bar .artist {
+    font-size: 0.85em;
+    color: #999;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* 中间区域：播放控制按钮 */
 .controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-grow: 1;
+    gap: 8px;
+    flex: 0 0 auto;
 }
 
 .control-btn {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
-    padding: 0 10px;
-    color: #333;
+    padding: 8px;
+    color: #666;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+}
+
+.control-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* 播放按钮特殊样式 - 椭圆形背景 */
+.play-btn {
+    width: 50px;
+    height: 40px;
+    font-size: 24px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    margin: 0 6px;
+    color: #666;
+}
+
+.play-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--primary-color);
+}
+
+/* 喜欢按钮和桌面歌词按钮样式 */
+.like-btn,
+.desktop-lyrics-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    color: #666;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.like-btn:hover,
+.desktop-lyrics-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
 }
 
 
@@ -230,51 +295,110 @@
     opacity: 0.8;
 }
 
+/* 右侧区域：功能按钮 */
 .extra-controls {
     display: flex;
     align-items: center;
-    margin-left: auto;
-    gap: 4px;
+    gap: 8px;
+    flex: 0 0 auto;
 }
 
 .extra-btn {
     background: none;
     border: none;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
-    padding: 0 8px;
+    padding: 8px;
     color: #666;
-}
-
-
-.volume-control {
+    transition: all 0.3s ease;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
 }
 
-.volume-control i {
+.extra-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* 音量控制 */
+.volume-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.volume-icon {
     font-size: 18px;
     color: #666;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
 }
 
-.volume-slider {
-    width: 100px;
-    height: 6px;
-    background-color: #ddd;
-    border-radius: 3px;
+.volume-icon:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* 竖向音量滑块 */
+.volume-slider-vertical {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 12px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.volume-control:hover .volume-slider-vertical {
+    opacity: 1;
+    visibility: visible;
+}
+
+.volume-percentage {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.volume-track {
+    width: 4px;
+    height: 100px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
     position: relative;
-    overflow: hidden;
+    margin: 0 auto;
     cursor: pointer;
 }
 
-.volume-progress {
-    height: 100%;
-    background-color: var(--primary-color);
+.volume-fill {
     position: absolute;
+    bottom: 0;
     left: 0;
-    top: 0;
-    border-radius: 3px;
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    transition: height 0.1s ease;
 }
 
 /* 全屏歌词界面样式 */
@@ -316,7 +440,8 @@
     width: 100%;
 }
 
-.left-section {
+/* 全屏歌词界面的左侧区域 */
+.lyrics-screen .left-section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -804,38 +929,65 @@
 /* 平板端适配 (≤1024px) */
 @media screen and (max-width: 1024px) {
   .player-bar {
-    max-width: 100%;
-    padding: 8px;
+    padding: 8px 15px;
+    gap: 15px;
+  }
+
+  .left-section {
+    gap: 10px;
   }
 
   .album-art {
     width: 55px;
     height: 55px;
-    margin-right: 12px;
   }
 
   .album-art img {
-    width: 55px;
-    height: 55px;
+    width: 100%;
+    height: 100%;
   }
 
-  .song-title,
+  .song-title {
+    font-size: 13px;
+  }
+
   .artist {
-    width: 200px;
+    font-size: 0.8em;
   }
 
   .control-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .play-btn {
+    width: 46px;
+    height: 38px;
     font-size: 22px;
-    padding: 0 8px;
+  }
+
+  .like-btn,
+  .desktop-lyrics-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 
   .extra-btn {
-    font-size: 15px;
-    padding: 0 6px;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 
-  .volume-slider {
-    width: 80px;
+  .volume-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .extra-controls {
+    gap: 6px;
   }
 
   /* 全屏歌词界面 */
@@ -877,19 +1029,25 @@
   }
 
   .player-bar {
-    padding: 8px 10px;
+    padding: 8px 12px;
     flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .left-section {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
   }
 
   .album-art {
     width: 50px;
     height: 50px;
-    margin-right: 10px;
   }
 
   .album-art img {
-    width: 50px;
-    height: 50px;
+    width: 100%;
+    height: 100%;
   }
 
   .song-info {
@@ -898,46 +1056,61 @@
   }
 
   .song-title {
-    width: 150px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .artist {
-    width: 150px;
-    font-size: 0.85em;
+    font-size: 0.8em;
   }
 
   .controls {
     order: 3;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 4px;
     justify-content: center;
   }
 
   .control-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .play-btn {
+    width: 44px;
+    height: 36px;
     font-size: 20px;
-    padding: 0 8px;
+  }
+
+  .like-btn,
+  .desktop-lyrics-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
   }
 
   .extra-controls {
-    gap: 2px;
+    gap: 4px;
   }
 
   .extra-btn {
-    font-size: 14px;
-    padding: 0 5px;
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
   }
 
-  .volume-control {
-    gap: 6px;
+  .volume-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
   }
 
-  .volume-control i {
-    font-size: 16px;
+  .volume-slider-vertical {
+    padding: 10px 6px;
   }
 
-  .volume-slider {
-    width: 60px;
+  .volume-track {
+    height: 80px;
   }
 
   /* 全屏歌词界面 */
@@ -1015,50 +1188,90 @@
 /* 小屏手机适配 (≤480px) */
 @media screen and (max-width: 480px) {
   .player-bar {
-    padding: 6px 8px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .left-section {
+    gap: 6px;
   }
 
   .album-art {
     width: 45px;
     height: 45px;
-    margin-right: 8px;
   }
 
   .album-art img {
-    width: 45px;
-    height: 45px;
+    width: 100%;
+    height: 100%;
   }
 
   .song-title {
-    width: 120px;
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .artist-separator {
+    margin: 0 4px;
   }
 
   .artist {
-    width: 120px;
-    font-size: 0.8em;
+    font-size: 0.75em;
   }
 
   .controls {
-    margin-top: 6px;
+    margin-top: 4px;
+    gap: 6px;
   }
 
   .control-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 32px;
     font-size: 18px;
-    padding: 0 6px;
+  }
+
+  .like-btn,
+  .desktop-lyrics-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+  }
+
+  .extra-controls {
+    gap: 3px;
   }
 
   .extra-btn {
-    font-size: 13px;
-    padding: 0 4px;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
   }
 
-  .volume-slider {
-    width: 50px;
+  .volume-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+  }
+
+  .volume-slider-vertical {
+    padding: 8px 5px;
+  }
+
+  .volume-track {
+    height: 70px;
   }
 
   /* 隐藏部分次要控制按钮以节省空间 */
-  .extra-controls .extra-btn:not(.like-btn):not([class*="volume"]) {
+  .playback-speed {
+    display: none;
+  }
+
+  .extra-controls .extra-btn[title="收藏至"] {
     display: none;
   }
 
