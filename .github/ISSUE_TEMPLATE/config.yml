@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🌈 社区交流
+    url: https://github.com/oliver-xie666/sonic-music/discussions
+    about: 加入我们的社区进行交流和讨论
+  - name: 📚 项目文档
+    url: https://github.com/oliver-xie666/sonic-music
+    about: 查看项目文档以获取更多帮助信息
+  - name: 🛠️ 开发与编译
+    url: https://github.com/oliver-xie666/sonic-music#readme
+    about: 了解项目如何进行开发和编译
