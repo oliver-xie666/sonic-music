@@ -1,0 +1,218 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # 创建 GitHub Release
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.VERSION }}
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get-version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.1")
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          VERSION=${{ steps.get-version.outputs.VERSION }}
+
+          # 尝试获取上一个 tag
+          PREV_TAG=$(git describe --tags --abbrev=0 ${VERSION}^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            # 如果没有上一个 tag，这是第一个版本
+            COMMITS=$(git log --pretty=format:"* %s" | head -20)
+            CHANGELOG_LINK="https://github.com/${{ github.repository }}/commits/${VERSION}"
+          else
+            # 获取两个 tag 之间的提交
+            COMMITS=$(git log ${PREV_TAG}..${VERSION} --pretty=format:"* %s")
+            CHANGELOG_LINK="https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${VERSION}"
+          fi
+
+          # 如果没有提交信息，使用默认消息
+          if [ -z "$COMMITS" ]; then
+            COMMITS="* Initial release"
+          fi
+
+          # 创建 release body
+          {
+            echo "RELEASE_BODY<<EOF"
+            echo "## 🎉 What's New"
+            echo ""
+            echo "$COMMITS"
+            echo ""
+            echo "## 📦 Installation"
+            echo ""
+            echo "Download the appropriate installer for your platform:"
+            echo "- **Windows**: \`Sonic_Music_Setup_${VERSION}.exe\`"
+            echo "- **macOS**: \`Sonic_Music_${VERSION}-universal.dmg\`"
+            echo "- **Linux**: \`Sonic_Music_${VERSION}.AppImage\` or \`.deb\`"
+            echo ""
+            echo "## 📝 Full Changelog"
+            echo ""
+            echo "**Full Changelog**: ${CHANGELOG_LINK}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get-version.outputs.VERSION }}
+          name: "Sonic Music ${{ steps.get-version.outputs.VERSION }}"
+          body: ${{ steps.release-notes.outputs.RELEASE_BODY }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Windows 端打包并上传到 GitHub Release
+  build-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+    needs: create-release
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Windows application
+        run: pnpm run build:electron:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List build artifacts
+        run: |
+          dir apps\electron\dist_electron
+        shell: cmd
+
+      - name: Upload Windows artifacts to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: |
+            apps/electron/dist_electron/*.exe
+            apps/electron/dist_electron/*.exe.blockmap
+            apps/electron/dist_electron/latest.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # macOS 端打包并上传到 GitHub Release
+  build-macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    needs: create-release
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build macOS application
+        run: pnpm run build:electron:macos
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List build artifacts
+        run: ls -la apps/electron/dist_electron/
+
+      - name: Upload macOS artifacts to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: |
+            apps/electron/dist_electron/*.dmg
+            apps/electron/dist_electron/*.dmg.blockmap
+            apps/electron/dist_electron/*.zip
+            apps/electron/dist_electron/latest-mac.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Linux 端打包并上传到 GitHub Release
+  build-linux:
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    needs: create-release
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Linux application
+        run: pnpm run build:electron:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List build artifacts
+        run: ls -la apps/electron/dist_electron/
+
+      - name: Upload Linux artifacts to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: |
+            apps/electron/dist_electron/*.AppImage
+            apps/electron/dist_electron/*.deb
+            apps/electron/dist_electron/latest-linux.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
