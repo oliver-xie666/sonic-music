@@ -10,6 +10,7 @@ import { exec } from 'child_process';
 import { checkForUpdates } from './updater.js';
 import { Notification } from 'electron';
 import extensionManager from './extensionManager.js';
+import * as downloadManager from './downloadManager.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const store = new Store();
 const { TouchBarLabel, TouchBarButton, TouchBarGroup, TouchBarSpacer } = TouchBar;
@@ -805,11 +806,11 @@ export function sendHashAfterLoad(mainWindow) {
     if (mainWindow) {
         protocolMainWindow = mainWindow;
     }
-    
+
     if ((hash || listid) && protocolMainWindow) {
         protocolMainWindow.webContents.on('did-finish-load', () => {
             setTimeout(() => {
-                protocolMainWindow.webContents.send('url-params', { 
+                protocolMainWindow.webContents.send('url-params', {
                     hash,
                     listid,
                     urlPath: 'share'
@@ -817,4 +818,73 @@ export function sendHashAfterLoad(mainWindow) {
             }, 1000);
         });
     }
+}
+
+// 注册下载相关的 IPC 处理器
+export function registerDownloadHandlers() {
+    // 下载音乐
+    ipcMain.on('download-music', downloadManager.handleDownloadRequest);
+
+    // 获取已下载音乐列表
+    ipcMain.handle('get-downloaded-music', async () => {
+        return await downloadManager.getDownloadedMusic();
+    });
+
+    // 删除已下载的音乐
+    ipcMain.handle('delete-downloaded-music', async (event, filePath) => {
+        return await downloadManager.deleteDownloadedMusic(filePath);
+    });
+
+    // 清空下载记录
+    ipcMain.handle('clear-downloaded-music', () => {
+        return downloadManager.clearDownloadedMusic();
+    });
+
+    // 检查音乐是否已下载
+    ipcMain.handle('check-music-downloaded', (event, filename) => {
+        return downloadManager.checkMusicDownloaded(filename);
+    });
+
+    // 检查歌曲是否已下载(通过ID)
+    ipcMain.handle('check-song-downloaded', (event, songId) => {
+        return downloadManager.checkSongDownloaded(songId);
+    });
+
+    // 选择下载目录
+    ipcMain.handle('select-directory', async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ['openDirectory']
+        });
+        if (!result.canceled && result.filePaths.length > 0) {
+            return result.filePaths[0];
+        }
+        return null;
+    });
+
+    // 在文件管理器中打开目录
+    ipcMain.handle('open-directory', async (event, dirPath) => {
+        try {
+            await shell.openPath(dirPath);
+            return true;
+        } catch (error) {
+            console.error('打开目录失败:', error);
+            return false;
+        }
+    });
+
+    // 获取系统下载文件夹路径
+    ipcMain.handle('get-downloads-path', () => {
+        return app.getPath('downloads');
+    });
+
+    // 获取配置值
+    ipcMain.handle('get-store-value', (event, key) => {
+        return store.get(key);
+    });
+
+    // 设置配置值
+    ipcMain.handle('set-store-value', (event, key, value) => {
+        store.set(key, value);
+        return true;
+    });
 }

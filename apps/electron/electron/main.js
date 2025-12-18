@@ -3,7 +3,7 @@ import {
     createWindow, createTray, createTouchBar, startApiServer,
     stopApiServer, registerShortcut,
     playStartupSound, createLyricsWindow, setThumbarButtons,
-    registerProtocolHandler, sendHashAfterLoad
+    registerProtocolHandler, sendHashAfterLoad, registerDownloadHandlers
 } from './appServices.js';
 import { initializeExtensions, cleanupExtensions } from './extensions.js';
 import { setupAutoUpdater } from './updater.js';
@@ -70,6 +70,7 @@ app.on('ready', () => {
             apiService.init(mainWindow);
             registerProtocolHandler(mainWindow);
             sendHashAfterLoad(mainWindow);
+            registerDownloadHandlers();
             initializeExtensions();
         } catch (error) {
             console.log('初始化应用时发生错误:', error);

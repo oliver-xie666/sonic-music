@@ -22,6 +22,10 @@
       <i class="fas fa-folder"></i>
     </router-link>
 
+    <router-link to="/download" class="nav-button" :class="{ active: $route.path === '/download' }" data-tip="下载">
+      <i class="fas fa-download"></i>
+    </router-link>
+
     <div class="nav-divider"></div>
 
     <router-link to="/settings" class="nav-button" :class="{ active: $route.path === '/settings' }" data-tip="设置">

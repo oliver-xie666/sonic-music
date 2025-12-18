@@ -3,6 +3,7 @@
         <TitleBar v-if="showTitleBar && !isLyricsRoute" />
         <RouterView />
         <Disclaimer v-if="!isLyricsRoute" />
+        <DownloadDrawer v-if="!isLyricsRoute" />
     </div>
 </template>
 
@@ -11,6 +12,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Disclaimer from '@/components/Disclaimer.vue';
 import TitleBar from '@/components/TitleBar.vue';
+import DownloadDrawer from '@/components/DownloadDrawer.vue';
 
 const route = useRoute();
 const isLyricsRoute = computed(() => route.path === '/lyrics');

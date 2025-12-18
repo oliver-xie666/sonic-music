@@ -30,4 +30,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ensureExtensionsDirectory: () => ipcRenderer.invoke('ensure-extensions-directory'),
     installPluginFromZip: (zipPath) => ipcRenderer.invoke('install-plugin-from-zip', zipPath),
     showOpenDialog: (options) => ipcRenderer.invoke('show-open-dialog', options),
+
+    // 下载管理
+    getDownloadedMusic: () => ipcRenderer.invoke('get-downloaded-music'),
+    deleteDownloadedMusic: (filePath) => ipcRenderer.invoke('delete-downloaded-music', filePath),
+    clearDownloadedMusic: () => ipcRenderer.invoke('clear-downloaded-music'),
+    checkMusicDownloaded: (filename) => ipcRenderer.invoke('check-music-downloaded', filename),
+    checkSongDownloaded: (songId) => ipcRenderer.invoke('check-song-downloaded', songId),
+    selectDirectory: () => ipcRenderer.invoke('select-directory'),
+    openDirectory: (dirPath) => ipcRenderer.invoke('open-directory', dirPath),
+    getDownloadsPath: () => ipcRenderer.invoke('get-downloads-path'),
+    getStoreValue: (key) => ipcRenderer.invoke('get-store-value', key),
+    setStoreValue: (key, value) => ipcRenderer.invoke('set-store-value', key, value),
 });
