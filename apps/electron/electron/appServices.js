@@ -79,9 +79,13 @@ export function createWindow() {
         if(savedConfig?.networkMode == 'devnet'){ //开发网
             mainWindow.loadURL('http://localhost:8080');
         }else if(savedConfig?.networkMode == 'testnet'){ //测试网
-            mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+            // 打包后使用正确的路径
+            const indexPath = path.join(app.getAppPath(), 'dist/index.html');
+            mainWindow.loadFile(indexPath);
         }else{ //主网
-            mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+            // 打包后使用正确的路径
+            const indexPath = path.join(app.getAppPath(), 'dist/index.html');
+            mainWindow.loadFile(indexPath);
         }
     }
 

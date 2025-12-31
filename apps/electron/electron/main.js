@@ -37,7 +37,14 @@ if (!gotTheLock) {
 }
 
 // 在 app ready 之前读取设置并应用
-const settings = store.get('settings');
+// 使用 try-catch 避免打包后 store 初始化失败
+let settings = null;
+try {
+    settings = store.get('settings');
+} catch (error) {
+    console.log('无法读取设置，使用默认配置:', error);
+}
+
 if (settings?.gpuAcceleration === 'on') {
     app.disableHardwareAcceleration();
     app.commandLine.appendSwitch('enable-transparent-visuals');
