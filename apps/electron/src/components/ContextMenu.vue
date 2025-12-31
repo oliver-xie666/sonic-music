@@ -121,11 +121,30 @@ const downloadSong = async (song) => {
     if (!song) return;
 
     try {
+        // 根据当前音质设置获取下载链接
+        const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+        const data = {
+            hash: song.FileHash
+        };
+
+        // 音质映射：将设置中的音质值映射到 API 的 quality 参数
+        if (settings?.qualityCompatibility === 'off') {
+            const qualityMap = {
+                'normal': '128',
+                'high': '320',
+                'lossless': 'flac',
+                'hires': 'high',
+                'viper_atmos': 'viper_atmos',
+                'viper_clear': 'viper_clear',
+                'viper_tape': 'viper_tape'
+            };
+            if (settings?.quality && qualityMap[settings.quality]) {
+                data.quality = qualityMap[settings.quality];
+            }
+        }
+
         // 获取歌曲播放链接
-        const response = await get('/song/url', {
-            hash: song.FileHash,
-            quality: 'high'
-        });
+        const response = await get('/song/url', data);
 
         if (response.status === 1 && response.url) {
             // 获取下载链接 (url 可能是数组或字符串)

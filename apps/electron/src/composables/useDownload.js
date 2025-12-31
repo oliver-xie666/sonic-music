@@ -14,13 +14,21 @@ export function useDownload() {
 
         try {
             // 构建文件名
-            const artistNames = songInfo.SingerName || songInfo.artist || '未知艺术家';
+            const artistNames = songInfo.SingerName || songInfo.artist || (songInfo.ar && songInfo.ar[0]?.name) || '未知艺术家';
             const songName = songInfo.OriSongName || songInfo.SongName || songInfo.name || '未知歌曲';
             const filename = `${songName} - ${artistNames}`;
 
+            // 直接使用传入的 URL（调用方已经根据音质设置获取了正确的 URL）
+            const downloadUrl = songInfo.url || songInfo.playUrl;
+            if (!downloadUrl) {
+                console.error('下载 URL 不存在');
+                alert('获取下载链接失败，请稍后重试');
+                return;
+            }
+
             // 发送下载请求
             window.electron.ipcRenderer.send('download-music', {
-                url: songInfo.url || songInfo.playUrl,
+                url: downloadUrl,
                 filename,
                 songInfo: {
                     ...songInfo,
@@ -31,6 +39,7 @@ export function useDownload() {
             console.log('已添加到下载队列:', filename);
         } catch (error) {
             console.error('下载失败:', error);
+            alert('下载失败: ' + error.message);
         }
     };
 
