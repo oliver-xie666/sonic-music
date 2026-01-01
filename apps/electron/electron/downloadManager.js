@@ -9,7 +9,14 @@ import * as mm from 'music-metadata';
 import * as NodeID3 from 'node-id3';
 import * as os from 'os';
 import * as path from 'path';
-import sharp from 'sharp';
+
+// 尝试加载 sharp，如果失败则设为 null（可选依赖）
+let sharp = null;
+try {
+    sharp = (await import('sharp')).default;
+} catch (error) {
+    console.warn('Sharp module not available, image compression will be skipped:', error.message);
+}
 
 const MAX_CONCURRENT_DOWNLOADS = 3;
 const downloadQueue = [];
@@ -295,7 +302,8 @@ async function downloadMusic(event, { url, filename, songInfo, type = 'mp3' }) {
                     const originalCoverBuffer = Buffer.from(coverResponse.data);
                     const TWO_MB = 2 * 1024 * 1024;
 
-                    if (originalCoverBuffer.length > TWO_MB) {
+                    // 如果封面大于 2MB 且 sharp 可用，则压缩
+                    if (originalCoverBuffer.length > TWO_MB && sharp) {
                         try {
                             coverImageBuffer = await sharp(originalCoverBuffer)
                                 .resize({

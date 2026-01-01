@@ -61,7 +61,8 @@ export function createWindow() {
             contextIsolation: true,
             nodeIntegration: false,
             sandbox: false,
-            webSecurity: true,
+            webSecurity: false,
+            allowRunningInsecureContent: true,
             zoomFactor: 1.0
         },
         icon: getIconPath('icon.ico')
@@ -80,12 +81,10 @@ export function createWindow() {
             mainWindow.loadURL('http://localhost:8080');
         }else if(savedConfig?.networkMode == 'testnet'){ //测试网
             // 打包后使用正确的路径
-            const indexPath = path.join(app.getAppPath(), 'dist/index.html');
-            mainWindow.loadFile(indexPath);
+            mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
         }else{ //主网
             // 打包后使用正确的路径
-            const indexPath = path.join(app.getAppPath(), 'dist/index.html');
-            mainWindow.loadFile(indexPath);
+            mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
         }
     }
 
@@ -433,15 +432,17 @@ export function startApiServer() {
             return resolve();
             // apiPath = path.join(__dirname, '../api/app_api');
         } else {
+            // extraFiles 会将文件放到应用根目录，而不是 resources 目录
+            const appPath = path.dirname(app.getPath('exe'));
             switch (process.platform) {
                 case 'win32':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_win.exe');
+                    apiPath = path.join(appPath, 'api', 'app_win.exe');
                     break;
                 case 'darwin':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_macos');
+                    apiPath = path.join(appPath, 'api', 'app_macos');
                     break;
                 case 'linux':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_linux');
+                    apiPath = path.join(appPath, 'api', 'app_linux');
                     break;
                 default:
                     reject(new Error(`Unsupported platform: ${process.platform}`));
