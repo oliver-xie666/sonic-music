@@ -214,6 +214,7 @@ const selectedSettings = ref({
     networkMode: { displayText: '主网', value: 'mainnet' },
     proxy: { displayText: t('guan-bi'), value: 'off' },
     proxyUrl: { displayText: '', value: '' },
+    dataSource: { displayText: '正式版', value: 'official' },
 });
 
 // 设置分区配置
@@ -261,6 +262,14 @@ const settingSections = computed(() => [
                 key: 'greetings',
                 label: t('qi-dong-wen-hou-yu'),
                 icon: '👋 '
+            },
+            {
+                key: 'dataSource',
+                label: '数据源',
+                icon: '🔌 ',
+                showRefreshHint: true,
+                refreshHintText: '重启后生效',
+                helpLink:'https://github.com/oliver-xie666/sonic-music'
             }
         ]
     },
@@ -325,6 +334,14 @@ const settingSections = computed(() => [
             {
                 key: 'networkMode',
                 label: '网络模式',
+                showRefreshHint: true,
+                refreshHintText: '重启后生效',
+                helpLink:'https://github.com/oliver-xie666/sonic-music'
+            },
+            {
+                key: 'dataSource',
+                label: '数据源',
+                icon: '🔌 ',
                 showRefreshHint: true,
                 refreshHintText: '重启后生效',
                 helpLink:'https://github.com/oliver-xie666/sonic-music'
@@ -411,6 +428,8 @@ const getItemIcon = (key) => {
         'touchBar': 'fas fa-tablet-alt',
         'shortcuts': 'fas fa-keyboard',
         'pwa': 'fas fa-mobile-alt',
+        'networkMode': 'fas fa-network-wired',
+        'dataSource': 'fas fa-database',
         'proxy': 'fas fa-random'
     };
     return iconMap[key] || 'fas fa-sliders-h';
@@ -602,6 +621,13 @@ const selectionTypeMap = {
             { displayText: '开发网', value: 'devnet' }
         ]
     },
+    dataSource: {
+        title: '数据源',
+        options: [
+            { displayText: '正式版', value: 'official' },
+            { displayText: '概念版', value: 'concept' }
+        ]
+    },
     proxy: {
         title: '网络代理',
         options: [
@@ -628,7 +654,8 @@ const showRefreshHint = ref({
     preventAppSuspension: false,
     networkMode: false,
     apiMode: false,
-    proxy: false
+    proxy: false,
+    dataSource: false
 });
 
 const openSelection = (type, helpLink) => {
@@ -710,12 +737,15 @@ const selectOption = (option) => {
         },
         'networkMode': () => {
             showRefreshHint.value.networkMode = true;
+        },
+        'dataSource': () => {
+            showRefreshHint.value.dataSource = true;
         }
     };
     actions[selectionType.value]?.();
     saveSettings();
     if(!['apiMode','font','fontUrl', 'proxy'].includes(selectionType.value)) closeSelection();
-    const refreshHintTypes = ['lyricsBackground', 'lyricsFontSize', 'gpuAcceleration', 'highDpi', 'apiMode', 'touchBar', 'preventAppSuspension', 'networkMode', 'font', 'proxy'];
+    const refreshHintTypes = ['lyricsBackground', 'lyricsFontSize', 'gpuAcceleration', 'highDpi', 'apiMode', 'touchBar', 'preventAppSuspension', 'networkMode', 'dataSource', 'font', 'proxy'];
     if (refreshHintTypes.includes(selectionType.value)) {
         showRefreshHint.value[selectionType.value] = true;
     }
