@@ -11,25 +11,45 @@
         </div>
 
         <div class="download-tabs">
-            <div
-                class="tab-item"
-                :class="{ active: activeTab === 'downloading' }"
-                @click="activeTab = 'downloading'"
-            >
-                <span>下载中</span>
-                <span v-if="downloadStore.activeDownloadCount > 0" class="badge">
-                    {{ downloadStore.activeDownloadCount }}
-                </span>
+            <div class="tabs-left">
+                <div
+                    class="tab-item"
+                    :class="{ active: activeTab === 'downloading' }"
+                    @click="activeTab = 'downloading'"
+                >
+                    <span>下载中</span>
+                    <span v-if="downloadStore.activeDownloadCount > 0" class="badge">
+                        {{ downloadStore.activeDownloadCount }}
+                    </span>
+                </div>
+                <div
+                    class="tab-item"
+                    :class="{ active: activeTab === 'downloaded' }"
+                    @click="activeTab = 'downloaded'"
+                >
+                    <span>已下载</span>
+                    <span v-if="downloadStore.completedCount > 0" class="badge">
+                        {{ downloadStore.completedCount }}
+                    </span>
+                </div>
             </div>
-            <div
-                class="tab-item"
-                :class="{ active: activeTab === 'downloaded' }"
-                @click="activeTab = 'downloaded'"
-            >
-                <span>已下载</span>
-                <span v-if="downloadStore.completedCount > 0" class="badge">
-                    {{ downloadStore.completedCount }}
-                </span>
+            <div class="tabs-right">
+                <button
+                    v-if="activeTab === 'downloading' && downloadStore.downloadingList.length > 0"
+                    class="clear-btn"
+                    @click="clearDownloadingList"
+                >
+                    <i class="fas fa-trash-alt"></i>
+                    清空下载中
+                </button>
+                <button
+                    v-if="activeTab === 'downloaded' && downloadStore.downloadedList.length > 0"
+                    class="clear-btn"
+                    @click="clearDownloadedList"
+                >
+                    <i class="fas fa-trash-alt"></i>
+                    清空已下载
+                </button>
             </div>
         </div>
 
@@ -64,6 +84,9 @@
                             </div>
                             <div class="download-stats">
                                 <span class="progress-text">{{ item.progress || 0 }}%</span>
+                                <span v-if="item.loaded && item.total" class="size-text">
+                                    {{ formatFileSize(item.loaded) }} / {{ formatFileSize(item.total) }}
+                                </span>
                                 <span v-if="item.speed" class="speed-text">
                                     {{ formatSpeed(item.speed) }}
                                 </span>
@@ -156,12 +179,6 @@
         <!-- 设置抽屉 -->
         <div v-if="showSettings" class="settings-drawer" @click.self="showSettings = false">
             <div class="drawer-content">
-                <div class="drawer-header">
-                    <h2>下载设置</h2>
-                    <button class="save-btn" @click="saveSettings">
-                        保存
-                    </button>
-                </div>
                 <div class="drawer-body">
                     <!-- 下载路径设置 -->
                     <div class="setting-section">
@@ -327,6 +344,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="drawer-footer">
+                    <h2>下载设置</h2>
+                    <button class="save-btn" @click="saveSettings">
+                        保存
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -408,25 +431,34 @@ const openDownloadPath = async () => {
 };
 
 const saveSettings = async () => {
+    console.log('=== 前端保存设置调试 ===');
+    console.log('1. filenameFormat:', downloadStore.filenameFormat);
+    console.log('2. downloadPath:', downloadStore.downloadPath);
+    console.log('3. separator:', downloadStore.separator);
+
     // 保存到后端配置
     if (window.electron) {
         try {
             // 保存下载路径
             window.electron.ipcRenderer.send('set-store-value', 'set.downloadPath', downloadStore.downloadPath);
+            console.log('4. 已发送 set.downloadPath');
 
             // 保存文件名格式
             window.electron.ipcRenderer.send('set-store-value', 'set.downloadNameFormat', downloadStore.filenameFormat);
+            console.log('5. 已发送 set.downloadNameFormat:', downloadStore.filenameFormat);
 
             // 保存分隔符
             window.electron.ipcRenderer.send('set-store-value', 'set.downloadSeparator', downloadStore.separator);
+            console.log('6. 已发送 set.downloadSeparator');
+            console.log('=== 前端调试结束 ===\n');
 
             console.log('下载设置已保存');
 
             // 显示成功提示
-            alert('设置已保存');
+            window.$message.success('设置已保存');
         } catch (error) {
             console.error('保存设置失败:', error);
-            alert('保存设置失败: ' + error.message);
+            window.$message.error('保存设置失败: ' + error.message);
         }
     }
 
@@ -548,16 +580,38 @@ const formatPreview = computed(() => {
         .replace(/\{artistName\}/g, '香蜜沉沉烬如霜')
         .replace(/\{albumName\}/g, '电视剧原声带');
 });
+
+// 清空下载中列表
+const clearDownloadingList = async () => {
+    const result = await window.$modal.confirm('确定要清空所有下载中的任务吗？');
+    if (result) {
+        // 取消所有下载中的任务
+        for (const item of downloadStore.downloadingList) {
+            await cancelDownload(item.filename);
+        }
+        downloadStore.clearDownloading();
+    }
+};
+
+// 清空已下载列表
+const clearDownloadedList = async () => {
+    const result = await window.$modal.confirm('确定要清空已下载列表吗？这不会删除文件，只会清空列表记录。');
+    if (result) {
+        downloadStore.clearCompleted();
+    }
+};
 </script>
 
 <style scoped>
 .download-page {
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 180px);
     background: var(--background-color);
     color: var(--text-color);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .download-header {
@@ -594,8 +648,14 @@ const formatPreview = computed(() => {
 
 .download-tabs {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 0 30px;
     border-bottom: 1px solid var(--border-color);
+}
+
+.tabs-left {
+    display: flex;
 }
 
 .tab-item {
@@ -639,6 +699,30 @@ const formatPreview = computed(() => {
     border-radius: 10px;
     font-size: 12px;
     font-weight: 500;
+}
+
+.clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.clear-btn:hover {
+    background: #ff4444;
+    color: white;
+    border-color: #ff4444;
+}
+
+.clear-btn i {
+    font-size: 13px;
 }
 
 .download-content {
@@ -777,7 +861,7 @@ const formatPreview = computed(() => {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 9999;
     display: flex;
     justify-content: flex-end;
 }
@@ -806,6 +890,7 @@ const formatPreview = computed(() => {
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
+    /* margin-top: 100px; */
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -837,6 +922,21 @@ const formatPreview = computed(() => {
     padding: 24px;
     overflow-y: auto;
     flex: 1;
+}
+
+.drawer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-color);
+    background: var(--background-color);
+}
+
+.drawer-footer h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .save-btn {
@@ -1132,5 +1232,89 @@ const formatPreview = computed(() => {
     font-size: 14px;
     color: var(--text-color);
     font-weight: 500;
+}
+
+/* 响应式适配 */
+/* 平板端适配 (≤1024px) */
+@media screen and (max-width: 1024px) {
+    .download-page {
+        top: 92px;
+    }
+}
+
+/* 移动端适配 (≤768px) */
+@media screen and (max-width: 768px) {
+    .download-page {
+        top: 56px;
+        bottom: 150px;
+    }
+
+    .download-header {
+        padding: 15px 20px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .download-tabs {
+        padding: 0 20px;
+    }
+
+    .download-content {
+        padding: 15px 20px;
+    }
+}
+
+/* 小屏手机适配 (≤480px) */
+@media screen and (max-width: 480px) {
+    .download-page {
+        top: 52px;
+        bottom: 140px;
+    }
+
+    .download-header {
+        padding: 12px 15px;
+    }
+
+    .page-title {
+        font-size: 18px;
+    }
+
+    .settings-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .download-tabs {
+        padding: 0 15px;
+    }
+
+    .tab-item {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+
+    .clear-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .download-content {
+        padding: 12px 15px;
+    }
+
+    .song-cover {
+        width: 50px;
+        height: 50px;
+    }
+
+    .song-name {
+        font-size: 14px;
+    }
+
+    .song-artist {
+        font-size: 12px;
+    }
 }
 </style>

@@ -118,21 +118,39 @@ async function downloadMusic(event, { url, filename, songInfo, type = 'mp3' }) {
         // 获取文件名格式设置
         const nameFormat = store.get('set.downloadNameFormat') || '{songName} - {artistName}';
 
+        console.log('=== 下载管理器调试信息 ===');
+        console.log('1. 从配置读取的文件名格式:', nameFormat);
+        console.log('2. 下载路径:', downloadPath);
+        console.log('3. 原始filename参数:', filename);
+        console.log('4. 完整 songInfo:', JSON.stringify(songInfo, null, 2));
+
         // 根据格式创建文件名
         let formattedFilename = filename;
         if (songInfo) {
-            const artistName = songInfo.ar?.map((a) => a.name).join(',') || songInfo.SingerName || '未知艺术家';
-            const songName = songInfo.name || songInfo.OriSongName || songInfo.SongName || filename;
-            const albumName = songInfo.al?.name || songInfo.AlbumName || '未知专辑';
+            // 修复: 正确提取歌曲信息
+            // 优先使用前端已经处理好的字段
+            const artistName = songInfo.SingerName || (songInfo.ar?.map((a) => a.name).join(',')) || songInfo.artist || '未知艺术家';
+            const songName = songInfo.OriSongName || songInfo.SongName || songInfo.name || '未知歌曲';
+            const albumName = songInfo.AlbumName || (songInfo.al?.name) || songInfo.album || '未知专辑';
+
+            console.log('4. 提取的歌曲信息:');
+            console.log('   - songName:', songName);
+            console.log('   - artistName:', artistName);
+            console.log('   - albumName:', albumName);
 
             formattedFilename = nameFormat
                 .replace(/\{songName\}/g, songName)
                 .replace(/\{artistName\}/g, artistName)
                 .replace(/\{albumName\}/g, albumName);
+
+            console.log('5. 格式化后的文件名:', formattedFilename);
         }
 
         // 清理文件名
         const sanitizedFilename = sanitizeFilename(formattedFilename);
+
+        console.log('6. 清理后的文件名:', sanitizedFilename);
+        console.log('=== 调试信息结束 ===\n');
 
         // 创建临时文件路径
         const tempDir = path.join(os.tmpdir(), 'SonicMusicTemp');

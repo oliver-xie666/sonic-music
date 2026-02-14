@@ -110,6 +110,11 @@ export const useDownloadStore = defineStore('download', {
         clearCompleted() {
             this.downloadedList = [];
         },
+
+        // 清空下载中列表
+        clearDownloading() {
+            this.downloadingList = [];
+        },
     },
 
     persist: {

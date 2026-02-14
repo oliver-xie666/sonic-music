@@ -13,33 +13,69 @@ export function useDownload() {
         }
 
         try {
-            // 构建文件名
-            const artistNames = songInfo.SingerName || songInfo.artist || (songInfo.ar && songInfo.ar[0]?.name) || '未知艺术家';
-            const songName = songInfo.OriSongName || songInfo.SongName || songInfo.name || '未知歌曲';
+            // 调试: 输出完整的 songInfo 结构
+            console.log('=== 前端 useDownload 调试 ===');
+            console.log('完整 songInfo:', JSON.stringify(songInfo, null, 2));
+
+            // 获取歌曲信息
+            // 注意: 某些数据源的 name 和 ar 字段是反的
+            // 如果 ar 数组只有一个元素，可能 ar[0].name 才是歌曲名，name 是艺术家
+            let artistNames, songName;
+
+            if (songInfo.SingerName && songInfo.OriSongName) {
+                // 如果有明确的字段，直接使用
+                artistNames = songInfo.SingerName;
+                songName = songInfo.OriSongName;
+            } else if (songInfo.ar && songInfo.ar.length === 1 && !songInfo.artist) {
+                // 数据源反了的情况: ar[0].name 是歌曲名, name 是艺术家
+                songName = songInfo.ar[0].name;
+                artistNames = songInfo.name || '未知艺术家';
+            } else {
+                // 正常情况
+                artistNames = songInfo.artist || (songInfo.ar && songInfo.ar.map(a => a.name).join('、')) || '未知艺术家';
+                songName = songInfo.SongName || songInfo.name || '未知歌曲';
+            }
+
+            const albumName = songInfo.album || (songInfo.al && songInfo.al.name) || '未知专辑';
+
+            console.log('提取结果:');
+            console.log('  - artistNames:', artistNames);
+            console.log('  - songName:', songName);
+            console.log('  - albumName:', albumName);
+            console.log('=== 前端调试结束 ===\n');
+
+            // 使用简单的文件名作为标识符,后端会根据配置格式化
             const filename = `${songName} - ${artistNames}`;
 
             // 直接使用传入的 URL（调用方已经根据音质设置获取了正确的 URL）
             const downloadUrl = songInfo.url || songInfo.playUrl;
             if (!downloadUrl) {
                 console.error('下载 URL 不存在');
-                alert('获取下载链接失败，请稍后重试');
+                window.$message.error('获取下载链接失败，请稍后重试');
                 return;
             }
 
-            // 发送下载请求
+            // 发送下载请求,传递完整的歌曲信息给后端
             window.electron.ipcRenderer.send('download-music', {
                 url: downloadUrl,
                 filename,
                 songInfo: {
                     ...songInfo,
+                    name: songName,
+                    ar: songInfo.ar || [{ name: artistNames }],
+                    al: songInfo.al || { name: albumName },
+                    SingerName: artistNames,
+                    OriSongName: songName,
+                    AlbumName: albumName,
                     downloadTime: Date.now()
                 }
             });
 
             console.log('已添加到下载队列:', filename);
+            window.$message.success('已添加到下载队列');
         } catch (error) {
             console.error('下载失败:', error);
-            alert('下载失败: ' + error.message);
+            window.$message.error('下载失败: ' + error.message);
         }
     };
 
