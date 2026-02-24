@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.2] - 2026-02-24
+
+### ✨ 新增功能 (Features)
+
+- **托盘菜单**: 新增「重启应用」选项，参考 MoeKoeMusic 实现
+- **下载功能开关**: 新增下载功能开关设置（默认关闭），关闭时同步隐藏下载图标及右键菜单下载选项
+- **桌面歌词状态**: 桌面歌词按钮开启时高亮显示，直观反映当前状态
+- **搜索交互**: 搜索图标移至搜索框右侧，支持点击触发搜索，hover/点击时有放大效果
+
+### 🐛 问题修复 (Bug Fixes)
+
+- **数据源切换**: 修复 `--platform=lite` 硬编码问题，改为根据 `dataSource` 设置动态传参
+- **桌面歌词按钮**: 修复启动时按钮错误高亮的问题，改为仅反映当前会话状态
+- **下载图标**: 修复 DownloadDrawer 缺失 import 导致下载图标不显示的问题
+
+### 🗑️ 移除 (Removed)
+
+- **启动音频**: 移除应用启动时的音频问候语
+
+---
+
 ## [0.0.1] - 2025-12-11
 
 ### ✨ 新增功能 (Features)

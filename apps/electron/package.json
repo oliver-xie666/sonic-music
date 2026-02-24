@@ -1,6 +1,6 @@
 {
   "name": "@sonic-music/electron",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/oliver-xie666/sonic-music",
   "main": "electron/main.js",
   "scripts": {
