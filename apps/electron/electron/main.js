@@ -2,7 +2,7 @@ import { app, ipcMain, globalShortcut, dialog, Notification, shell, session, pow
 import {
     createWindow, createTray, createTouchBar, startApiServer,
     stopApiServer, registerShortcut,
-    playStartupSound, createLyricsWindow, setThumbarButtons,
+    createLyricsWindow, setThumbarButtons,
     registerProtocolHandler, sendHashAfterLoad, registerDownloadHandlers
 } from './appServices.js';
 import { initializeExtensions, cleanupExtensions } from './extensions.js';
@@ -71,7 +71,6 @@ app.on('ready', () => {
             mainWindow = createWindow();
             createTray(mainWindow);
             if (process.platform === "darwin" && store.get('settings')?.touchBar == 'on') createTouchBar(mainWindow);
-            playStartupSound();
             registerShortcut();
             setupAutoUpdater(mainWindow);
             apiService.init(mainWindow);
