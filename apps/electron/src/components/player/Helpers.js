@@ -48,11 +48,7 @@ export function useHelpers(t) {
   };
   
   // 桌面歌词控制
-  const _initDesktopLyrics = () => {
-    const savedConfig = JSON.parse(localStorage.getItem('settings')) || {};
-    return savedConfig?.desktopLyrics === 'on';
-  };
-  const isDesktopLyricsOn = ref(_initDesktopLyrics());
+  const isDesktopLyricsOn = ref(false);
 
   const desktopLyrics = () => {
     if (!isElectron()) return;
