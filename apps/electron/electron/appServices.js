@@ -294,6 +294,15 @@ export function createTray(mainWindow, title = '') {
             }
         },
         {
+            label: '重启应用',
+            icon: getIconPath('restart.png', 'menu'),
+            click: () => {
+                app.relaunch();
+                app.isQuitting = true;
+                app.quit();
+            }
+        },
+        {
             label: '显示/隐藏',
             accelerator: 'CmdOrCtrl+Shift+S',
             icon: getIconPath('show.png', 'menu'),
@@ -465,7 +474,13 @@ export function startApiServer() {
         const savedConfig = store.get('settings') || {};
         const proxy = savedConfig?.proxy;
         const proxyUrl = savedConfig?.proxyUrl;
-        const Args = ['--platform=lite'];
+        const dataSource = savedConfig?.dataSource || 'official';
+
+        const Args = [];
+        if (dataSource === 'concept') {
+            Args.push('--platform=lite');
+            log.info('API data source: concept (lite mode)');
+        }
         if (proxy === 'on' && proxyUrl) {
             const proxyAddress = String(proxyUrl).trim();
             if (proxyAddress) {
