@@ -210,6 +210,7 @@ const selectedSettings = ref({
     touchBar: { displayText: t('guan-bi'), value: 'off' },
     autoStart: { displayText: t('guan-bi'), value: 'off' },
     startMinimized: { displayText: t('guan-bi'), value: 'off' },
+    enableDownload: { displayText: t('guan-bi'), value: 'off' },
     preventAppSuspension: { displayText: t('guan-bi'), value: 'off' },
     networkMode: { displayText: '主网', value: 'mainnet' },
     proxy: { displayText: t('guan-bi'), value: 'off' },
@@ -351,6 +352,10 @@ const settingSections = computed(() => [
                 label: '启动时最小化'
             },
             {
+                key: 'enableDownload',
+                label: '启用下载功能'
+            },
+            {
                 key: 'preventAppSuspension',
                 label: '阻止系统休眠',
                 showRefreshHint: true,
@@ -423,6 +428,7 @@ const getItemIcon = (key) => {
         'minimizeToTray': 'fas fa-window-minimize',
         'autoStart': 'fas fa-power-off',
         'startMinimized': 'fas fa-compress',
+        'enableDownload': 'fas fa-download',
         'preventAppSuspension': 'fas fa-clock',
         'apiMode': 'fas fa-code',
         'touchBar': 'fas fa-tablet-alt',
@@ -606,6 +612,13 @@ const selectionTypeMap = {
             { displayText: t('guan-bi'), value: 'off' }
         ]
     },
+    enableDownload: {
+        title: '启用下载功能',
+        options: [
+            { displayText: t('da-kai'), value: 'on' },
+            { displayText: t('guan-bi'), value: 'off' }
+        ]
+    },
     preventAppSuspension: {
         title: '阻止系统休眠',
         options: [
@@ -776,6 +789,7 @@ const saveSettings = () => {
     );
     settingsToSave.shortcuts = shortcuts.value;
     localStorage.setItem('settings', JSON.stringify(settingsToSave));
+    window.dispatchEvent(new Event('settings-updated'));
     isElectron() && window.electron.ipcRenderer.send('save-settings', JSON.parse(JSON.stringify(settingsToSave)));
 };
 

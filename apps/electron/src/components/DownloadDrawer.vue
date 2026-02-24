@@ -1,5 +1,5 @@
 <template>
-    <div class="download-drawer-trigger" v-if="!isDownloadPage">
+    <div class="download-drawer-trigger" v-if="!isDownloadPage && isDownloadEnabled">
         <div class="download-badge-wrapper" v-if="downloadStore.activeDownloadCount > 0">
             <span class="download-badge">{{ downloadStore.activeDownloadCount > 99 ? '99+' : downloadStore.activeDownloadCount }}</span>
         </div>
@@ -10,15 +10,31 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useDownloadStore } from '@/stores/download';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
 const downloadStore = useDownloadStore();
 
 const isDownloadPage = computed(() => route.path === '/download');
+
+const isDownloadEnabled = ref(false);
+
+const syncDownloadSetting = () => {
+    const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+    isDownloadEnabled.value = settings?.enableDownload === 'on';
+};
+
+const onStorageChange = () => syncDownloadSetting();
+
+onMounted(() => {
+    syncDownloadSetting();
+    window.addEventListener('settings-updated', onStorageChange);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('settings-updated', onStorageChange);
+});
 
 const navigateToDownload = () => {
     router.push('/download');
