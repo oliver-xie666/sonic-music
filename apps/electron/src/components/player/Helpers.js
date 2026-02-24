@@ -48,15 +48,22 @@ export function useHelpers(t) {
   };
   
   // 桌面歌词控制
+  const _initDesktopLyrics = () => {
+    const savedConfig = JSON.parse(localStorage.getItem('settings')) || {};
+    return savedConfig?.desktopLyrics === 'on';
+  };
+  const isDesktopLyricsOn = ref(_initDesktopLyrics());
+
   const desktopLyrics = () => {
     if (!isElectron()) return;
-    
+
     let savedConfig = JSON.parse(localStorage.getItem('settings')) || {};
     if(!savedConfig?.desktopLyrics) savedConfig.desktopLyrics = 'off';
     let action = savedConfig?.desktopLyrics === 'off' ? 'display-lyrics' : 'close-lyrics';
     window.electron.ipcRenderer.send('desktop-lyrics-action', action);
     savedConfig.desktopLyrics = action === 'display-lyrics' ? 'on' : 'off';
     localStorage.setItem('settings', JSON.stringify(savedConfig));
+    isDesktopLyricsOn.value = savedConfig.desktopLyrics === 'on';
   };
   
   // 节流函数
@@ -102,6 +109,7 @@ export function useHelpers(t) {
     checkFocus,
     handleKeyDown,
     desktopLyrics,
+    isDesktopLyricsOn,
     throttle,
     getVip
   };
