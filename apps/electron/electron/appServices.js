@@ -439,7 +439,6 @@ export function startApiServer() {
         let apiPath = '';
         if (isDev) {
             return resolve();
-            // apiPath = path.join(__dirname, '../api/app_api');
         } else {
             // extraFiles 会将文件放到应用根目录，而不是 resources 目录
             const appPath = path.dirname(app.getPath('exe'));
