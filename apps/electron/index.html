@@ -29,7 +29,8 @@
                 return 'zh-CN';
             }
             const lang = browserLang.split('-')[0];
-            return Object.keys(messages).includes(lang) ? lang : 'ja';
+            const supportedLangs = ['en', 'ja', 'ko', 'zh-CN', 'zh-TW'];
+            return supportedLangs.includes(lang) ? lang : 'ja';
         };
         const settings = JSON.parse(localStorage.getItem('settings'));
         document.documentElement.lang = settings?.language || getBrowserLocale();

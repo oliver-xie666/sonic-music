@@ -5,7 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "serve": "vite",
-    "build": "vite build",
+    "build": "cross-env BUILD_TARGET=electron vite build",
     "build:web": "vite build",
     "build:docker": "cross-env VITE_APP_API_URL=/api vite build",
     "preview": "vite preview",
