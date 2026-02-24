@@ -11,6 +11,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useDownloadStore } from '@/stores/download';
 
 const router = useRouter();
 const route = useRoute();
