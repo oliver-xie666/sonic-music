@@ -15,7 +15,7 @@
             <li @click="shareSong(contextSong)"><i class="fa-solid fa-share-nodes"></i> 分享</li>
             <li v-if="MoeAuth.isAuthenticated && listId && contextSong.userid === MoeAuth.UserInfo.userid" @click="cancel()">取消收藏</li>
             <li v-if="MoeAuth.isAuthenticated" @click="addToNext(contextSong)">添加到下一首</li>
-            <li v-if="isElectron" @click="downloadSong(contextSong)"><i class="fa-solid fa-download"></i> 下载</li>
+            <li v-if="isElectron && isDownloadEnabled" @click="downloadSong(contextSong)"><i class="fa-solid fa-download"></i> 下载</li>
         </ul>
     </div>
 </template>
@@ -38,6 +38,10 @@ let events;
 
 // 检查是否在 Electron 环境
 const isElectron = computed(() => !!window.electron);
+const isDownloadEnabled = computed(() => {
+    const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+    return settings?.enableDownload === 'on';
+});
 
 // 下载功能
 const { downloadMusic } = useDownload();
