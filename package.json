@@ -26,6 +26,10 @@
     "build:api:win": "pnpm --filter @sonic-music/api pkgwin",
     "build:api:linux": "pnpm --filter @sonic-music/api pkglinux",
     "build:api:macos": "pnpm --filter @sonic-music/api pkgmacos",
+    "dev:mobile": "pnpm --filter @sonic-music/mobile dev:h5",
+    "build:mobile:h5": "pnpm --filter @sonic-music/mobile build:h5",
+    "build:mobile:android": "pnpm --filter @sonic-music/mobile build:android",
+    "build:mobile:ios": "pnpm --filter @sonic-music/mobile build:ios",
     "lint": "pnpm --filter @sonic-music/electron lint",
     "format": "prettier --write \"**/*.{js,vue,json,md}\"",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml"

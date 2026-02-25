@@ -1,0 +1,122 @@
+{
+  "pages": [
+    {
+      "path": "src/pages/home/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "src/pages/discover/index",
+      "style": {
+        "navigationBarTitleText": "发现"
+      }
+    },
+    {
+      "path": "src/pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "src/pages/library/index",
+      "style": {
+        "navigationBarTitleText": "我的音乐"
+      }
+    },
+    {
+      "path": "src/pages/search/result",
+      "style": {
+        "navigationBarTitleText": "搜索结果"
+      }
+    },
+    {
+      "path": "src/pages/playlist/detail",
+      "style": {
+        "navigationBarTitleText": "歌单详情"
+      }
+    },
+    {
+      "path": "src/pages/player/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "src/pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
+      "path": "src/pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "src/pages/artist/detail",
+      "style": {
+        "navigationBarTitleText": "歌手详情"
+      }
+    },
+    {
+      "path": "src/pages/album/detail",
+      "style": {
+        "navigationBarTitleText": "专辑详情"
+      }
+    },
+    {
+      "path": "src/pages/ranking/index",
+      "style": {
+        "navigationBarTitleText": "排行榜"
+      }
+    },
+    {
+      "path": "src/pages/ranking/detail",
+      "style": {
+        "navigationBarTitleText": "排行榜详情"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Sonic Music",
+    "navigationBarBackgroundColor": "#FFF0F5",
+    "backgroundColor": "#FFF0F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF69B4",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "src/pages/home/index",
+        "text": "首页",
+        "iconPath": "src/static/icons/home.png",
+        "selectedIconPath": "src/static/icons/home-active.png"
+      },
+      {
+        "pagePath": "src/pages/discover/index",
+        "text": "发现",
+        "iconPath": "src/static/icons/discover.png",
+        "selectedIconPath": "src/static/icons/discover-active.png"
+      },
+      {
+        "pagePath": "src/pages/search/index",
+        "text": "搜索",
+        "iconPath": "src/static/icons/search.png",
+        "selectedIconPath": "src/static/icons/search-active.png"
+      },
+      {
+        "pagePath": "src/pages/library/index",
+        "text": "我的",
+        "iconPath": "src/static/icons/library.png",
+        "selectedIconPath": "src/static/icons/library-active.png"
+      }
+    ]
+  }
+}

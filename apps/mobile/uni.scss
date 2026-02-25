@@ -1,0 +1,28 @@
+/* 全局设计 Token - 与 Electron CSS 变量保持一致 */
+
+/* 主题色（默认 Pink） */
+$primary-color: #FF69B4;
+$secondary-color: #FFB6C1;
+$bg-color: #FFF0F5;
+$bg-color-secondary: #FFE6F0;
+$color-primary: #ea33e4;
+$color-primary-light: rgba(255, 105, 180, 0.1);
+$border-color: #FFD9E6;
+$hover-color: #FFE9F2;
+$color-box-shadow: rgba(255, 105, 180, 0.2);
+
+/* 文字颜色 */
+$text-primary: #333333;
+$text-secondary: #999999;
+$text-placeholder: #BBBBBB;
+
+/* 布局尺寸 */
+$tab-bar-height: 50px;
+$mini-player-height: 60px;
+$nav-bar-height: 44px;
+
+/* 圆角 */
+$radius-sm: 6rpx;
+$radius-md: 12rpx;
+$radius-lg: 20rpx;
+$radius-full: 9999rpx;

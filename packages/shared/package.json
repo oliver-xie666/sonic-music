@@ -1,0 +1,20 @@
+{
+  "name": "@sonic-music/shared",
+  "version": "0.0.3",
+  "private": true,
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./utils/cover": "./src/utils/cover.js",
+    "./utils/time": "./src/utils/time.js",
+    "./utils/lyrics": "./src/utils/lyrics.js",
+    "./utils/quality": "./src/utils/quality.js",
+    "./stores/auth": "./src/stores/auth.js",
+    "./stores/musicQueue": "./src/stores/musicQueue.js",
+    "./stores/settings": "./src/stores/settings.js",
+    "./constants": "./src/constants/index.js"
+  },
+  "dependencies": {
+    "pinia": "^2.1.0"
+  }
+}
