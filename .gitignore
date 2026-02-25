@@ -49,4 +49,4 @@ release/
 .cursorrules
 
 # Claude Code
-.claude
+# .claude is tracked for team shared agents/commands/skills
