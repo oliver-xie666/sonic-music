@@ -417,12 +417,59 @@ pnpm dev:mobile    # http://localhost:5174
 
 ## 5. 实施顺序
 
-| Phase | 任务 |
-|---|---|
-| Phase 1 基础设施 | 初始化 packages/shared → 初始化 apps/mobile → 配置依赖 → API client |
-| Phase 2 核心播放 | useAudioPlayer → usePlayerStore → 全屏播放器 → MiniPlayer |
-| Phase 3 主要页面 | 截图 Electron → 首页 → 搜索 → 歌单详情 → 我的 → 设置 |
-| Phase 4 完善 | 登录 → 歌手/专辑/排行榜 → 下载 → CI/CD |
+> 详细的模块编写顺序与依赖关系见 `docs/architecture/development-order.md`
+
+### Phase 1 - 基础设施
+
+| 步骤 | 任务 | 产出文件 |
+|---|---|---|
+| 1.1 | 初始化 `packages/shared`（package.json + 目录结构） | `packages/shared/package.json` |
+| 1.2 | 提取共享工具函数（cover / time / lyrics） | `packages/shared/src/utils/*.js` |
+| 1.3 | 提取共享 Pinia stores（auth / musicQueue / settings） | `packages/shared/src/stores/*.js` |
+| 1.4 | 提取共享常量（quality map / theme colors） | `packages/shared/src/constants/index.js` |
+| 1.5 | 初始化 `apps/mobile`（UniApp Vue3 脚手架） | `apps/mobile/package.json` + `manifest.json` |
+| 1.6 | 配置 `pages.json`（路由 + Tab Bar） | `apps/mobile/pages.json` |
+| 1.7 | 配置 `uni.scss`（设计 Token） | `apps/mobile/uni.scss` |
+| 1.8 | 实现 `api/client.js`（uni.request 适配器） | `apps/mobile/src/api/client.js` |
+| 1.9 | 实现各 API 模块（song / search / playlist 等） | `apps/mobile/src/api/*.js` |
+| 1.10 | 配置主题系统（App.vue + theme.js） | `apps/mobile/App.vue` |
+
+### Phase 2 - 核心播放功能
+
+| 步骤 | 任务 | 产出文件 |
+|---|---|---|
+| 2.1 | 实现 `useAudioPlayer.js`（BackgroundAudioManager + InnerAudioContext） | `composables/useAudioPlayer.js` |
+| 2.2 | 实现 `usePlayerStore`（播放状态管理） | `stores/player.js` |
+| 2.3 | 实现 `usePlaybackMode.js`（顺序/随机/单曲循环） | `composables/usePlaybackMode.js` |
+| 2.4 | 实现 `useQueue.js`（队列导航逻辑） | `composables/useQueue.js` |
+| 2.5 | 实现 `useLyrics.js`（歌词获取 + 解析） | `composables/useLyrics.js` |
+| 2.6 | 开发全屏播放器页面 | `pages/player/index.vue` |
+| 2.7 | 开发 `MiniPlayer.vue`（悬浮迷你播放器） | `components/player/MiniPlayer.vue` |
+| 2.8 | 在 `App.vue` 挂载 MiniPlayer | `App.vue` |
+
+### Phase 3 - 主要页面
+
+| 步骤 | 任务 | 产出文件 |
+|---|---|---|
+| 3.1 | 截图 Electron 各页面（Playwright MCP） | `docs/design/screenshots/*.png` |
+| 3.2 | 开发公共组件（SongListItem / PlaylistCard 等） | `components/common/*.vue` |
+| 3.3 | 开发首页 | `pages/home/index.vue` |
+| 3.4 | 开发搜索入口页 + 搜索结果页 | `pages/search/*.vue` |
+| 3.5 | 开发歌单详情页 | `pages/playlist/detail.vue` |
+| 3.6 | 开发我的音乐页 | `pages/library/index.vue` |
+| 3.7 | 开发设置页（含服务器地址配置） | `pages/settings/index.vue` |
+
+### Phase 4 - 完善
+
+| 步骤 | 任务 | 产出文件 |
+|---|---|---|
+| 4.1 | 开发登录页 | `pages/login/index.vue` |
+| 4.2 | 开发发现页 | `pages/discover/index.vue` |
+| 4.3 | 开发歌手详情页 | `pages/artist/detail.vue` |
+| 4.4 | 开发专辑详情页 | `pages/album/detail.vue` |
+| 4.5 | 开发排行榜列表 + 详情页 | `pages/ranking/*.vue` |
+| 4.6 | 实现下载功能（uni.downloadFile） | `stores/download.js` |
+| 4.7 | 配置 CI/CD（GitHub Actions） | `.github/workflows/release-mobile.yml` |
 
 ---
 
