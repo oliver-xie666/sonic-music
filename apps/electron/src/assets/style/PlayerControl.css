@@ -238,6 +238,10 @@
     transform: scale(1.1);
 }
 
+.desktop-lyrics-btn.active {
+    color: var(--primary-color);
+}
+
 
 .progress-bar {
     width: 100%;

@@ -38,7 +38,7 @@
                 <button class="control-btn next-btn" @click="playSongFromQueue('next')">
                     <i class="fas fa-step-forward"></i>
                 </button>
-                <button class="extra-btn desktop-lyrics-btn" title="桌面歌词" v-if="isElectron()" @click="desktopLyrics">
+                <button class="extra-btn desktop-lyrics-btn" :class="{ active: isDesktopLyricsOn }" title="桌面歌词" v-if="isElectron()" @click="desktopLyrics">
                     <i class="fas">词</i>
                 </button>
             </div>
@@ -224,7 +224,7 @@ const isDragging = ref(false);
 const lyricsFlag = ref(false);
 
 // 辅助函数
-const { isElectron, throttle, getVip, desktopLyrics } = useHelpers(t);
+const { isElectron, throttle, getVip, desktopLyrics, isDesktopLyricsOn } = useHelpers(t);
 
 // 初始化事件回调
 const onSongEnd = () => {

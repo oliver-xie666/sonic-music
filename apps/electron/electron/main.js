@@ -2,8 +2,8 @@ import { app, ipcMain, globalShortcut, dialog, Notification, shell, session, pow
 import {
     createWindow, createTray, createTouchBar, startApiServer,
     stopApiServer, registerShortcut,
-    playStartupSound, createLyricsWindow, setThumbarButtons,
-    registerProtocolHandler, sendHashAfterLoad
+    createLyricsWindow, setThumbarButtons,
+    registerProtocolHandler, sendHashAfterLoad, registerDownloadHandlers
 } from './appServices.js';
 import { initializeExtensions, cleanupExtensions } from './extensions.js';
 import { setupAutoUpdater } from './updater.js';
@@ -37,7 +37,14 @@ if (!gotTheLock) {
 }
 
 // 在 app ready 之前读取设置并应用
-const settings = store.get('settings');
+// 使用 try-catch 避免打包后 store 初始化失败
+let settings = null;
+try {
+    settings = store.get('settings');
+} catch (error) {
+    console.log('无法读取设置，使用默认配置:', error);
+}
+
 if (settings?.gpuAcceleration === 'on') {
     app.disableHardwareAcceleration();
     app.commandLine.appendSwitch('enable-transparent-visuals');
@@ -64,12 +71,12 @@ app.on('ready', () => {
             mainWindow = createWindow();
             createTray(mainWindow);
             if (process.platform === "darwin" && store.get('settings')?.touchBar == 'on') createTouchBar(mainWindow);
-            playStartupSound();
             registerShortcut();
             setupAutoUpdater(mainWindow);
             apiService.init(mainWindow);
             registerProtocolHandler(mainWindow);
             sendHashAfterLoad(mainWindow);
+            registerDownloadHandlers();
             initializeExtensions();
         } catch (error) {
             console.log('初始化应用时发生错误:', error);

@@ -3,10 +3,14 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const isElectronBuild = process.env.BUILD_TARGET === 'electron';
+
 export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
+      disable: isElectronBuild,
+      injectRegister: isElectronBuild ? null : 'auto',
       registerType: 'autoUpdate',
       devOptions: {
         enabled: true,

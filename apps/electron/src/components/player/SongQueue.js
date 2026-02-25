@@ -33,8 +33,22 @@ export default function useSongQueue(t, musicQueueStore) {
             // 根据用户设置确定请求参数
             const MoeAuth = typeof MoeAuthStore === 'function' ? MoeAuthStore() : { isAuthenticated: false };
             if (!MoeAuth.isAuthenticated) data.free_part = 1;
-            if (MoeAuth.isAuthenticated && settings?.quality === 'lossless' && settings?.qualityCompatibility === 'off') data.quality = 'flac';
-            if (MoeAuth.isAuthenticated && settings?.quality === 'hires' && settings?.qualityCompatibility === 'off') data.quality = 'high';
+
+            // 音质映射：将设置中的音质值映射到 API 的 quality 参数
+            if (MoeAuth.isAuthenticated && settings?.qualityCompatibility === 'off') {
+                const qualityMap = {
+                    'normal': '128',
+                    'high': '320',
+                    'lossless': 'flac',
+                    'hires': 'high',
+                    'viper_atmos': 'viper_atmos',
+                    'viper_clear': 'viper_clear',
+                    'viper_tape': 'viper_tape'
+                };
+                if (settings?.quality && qualityMap[settings.quality]) {
+                    data.quality = qualityMap[settings.quality];
+                }
+            }
 
             const response = await get('/song/url', data);
             if (response.status !== 1) {

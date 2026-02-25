@@ -8,13 +8,13 @@
 
       <div class="header-right">
         <div class="search-bar">
-          <i class="fas fa-search"></i>
           <input
             v-model="searchQuery"
             type="text"
             :placeholder="$t('sou-suo-yin-le-ge-shou-ge-dan')"
             @keydown.enter="getSearch"
           >
+          <i class="fas fa-search search-icon" @click="getSearch"></i>
         </div>
 
         <div class="profile" @click="toggleProfile">
@@ -292,9 +292,18 @@ header {
   -webkit-app-region: no-drag;
 }
 
-.search-bar i {
+.search-icon {
   color: var(--secondary-color);
   font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  -webkit-app-region: no-drag;
+}
+
+.search-icon:hover,
+.search-icon:active {
+  color: var(--primary-color);
+  transform: scale(1.2);
 }
 
 .search-bar input {

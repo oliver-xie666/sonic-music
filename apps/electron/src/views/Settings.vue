@@ -210,10 +210,12 @@ const selectedSettings = ref({
     touchBar: { displayText: t('guan-bi'), value: 'off' },
     autoStart: { displayText: t('guan-bi'), value: 'off' },
     startMinimized: { displayText: t('guan-bi'), value: 'off' },
+    enableDownload: { displayText: t('guan-bi'), value: 'off' },
     preventAppSuspension: { displayText: t('guan-bi'), value: 'off' },
     networkMode: { displayText: '主网', value: 'mainnet' },
     proxy: { displayText: t('guan-bi'), value: 'off' },
     proxyUrl: { displayText: '', value: '' },
+    dataSource: { displayText: '正式版', value: 'official' },
 });
 
 // 设置分区配置
@@ -261,6 +263,14 @@ const settingSections = computed(() => [
                 key: 'greetings',
                 label: t('qi-dong-wen-hou-yu'),
                 icon: '👋 '
+            },
+            {
+                key: 'dataSource',
+                label: '数据源',
+                icon: '🔌 ',
+                showRefreshHint: true,
+                refreshHintText: '重启后生效',
+                helpLink:'https://github.com/oliver-xie666/sonic-music'
             }
         ]
     },
@@ -330,8 +340,20 @@ const settingSections = computed(() => [
                 helpLink:'https://github.com/oliver-xie666/sonic-music'
             },
             {
+                key: 'dataSource',
+                label: '数据源',
+                icon: '🔌 ',
+                showRefreshHint: true,
+                refreshHintText: '重启后生效',
+                helpLink:'https://github.com/oliver-xie666/sonic-music'
+            },
+            {
                 key: 'startMinimized',
                 label: '启动时最小化'
+            },
+            {
+                key: 'enableDownload',
+                label: '启用下载功能'
             },
             {
                 key: 'preventAppSuspension',
@@ -406,11 +428,14 @@ const getItemIcon = (key) => {
         'minimizeToTray': 'fas fa-window-minimize',
         'autoStart': 'fas fa-power-off',
         'startMinimized': 'fas fa-compress',
+        'enableDownload': 'fas fa-download',
         'preventAppSuspension': 'fas fa-clock',
         'apiMode': 'fas fa-code',
         'touchBar': 'fas fa-tablet-alt',
         'shortcuts': 'fas fa-keyboard',
         'pwa': 'fas fa-mobile-alt',
+        'networkMode': 'fas fa-network-wired',
+        'dataSource': 'fas fa-database',
         'proxy': 'fas fa-random'
     };
     return iconMap[key] || 'fas fa-sliders-h';
@@ -464,7 +489,10 @@ const selectionTypeMap = {
             { displayText: t('pu-tong-yin-zhi'), value: 'normal' },
             { displayText: t('gao-yin-zhi-320kbps'), value: 'high' },
             { displayText: t('wu-sun-yin-zhi-1104kbps'), value: 'lossless' },
-            { displayText: t('hires-yin-zhi'), value: 'hires' }
+            { displayText: t('hires-yin-zhi'), value: 'hires' },
+            { displayText: t('wei-she-quan-jing-sheng'), value: 'viper_atmos' },
+            { displayText: t('wei-she-chao-qing-yin-zhi'), value: 'viper_clear' },
+            { displayText: t('wei-she-mu-dai'), value: 'viper_tape' }
         ]
     },
     lyricsBackground: {
@@ -584,6 +612,13 @@ const selectionTypeMap = {
             { displayText: t('guan-bi'), value: 'off' }
         ]
     },
+    enableDownload: {
+        title: '启用下载功能',
+        options: [
+            { displayText: t('da-kai'), value: 'on' },
+            { displayText: t('guan-bi'), value: 'off' }
+        ]
+    },
     preventAppSuspension: {
         title: '阻止系统休眠',
         options: [
@@ -597,6 +632,13 @@ const selectionTypeMap = {
             { displayText: '主网', value: 'mainnet' },
             { displayText: '测试网', value: 'testnet' },
             { displayText: '开发网', value: 'devnet' }
+        ]
+    },
+    dataSource: {
+        title: '数据源',
+        options: [
+            { displayText: '正式版', value: 'official' },
+            { displayText: '概念版', value: 'concept' }
         ]
     },
     proxy: {
@@ -625,7 +667,8 @@ const showRefreshHint = ref({
     preventAppSuspension: false,
     networkMode: false,
     apiMode: false,
-    proxy: false
+    proxy: false,
+    dataSource: false
 });
 
 const openSelection = (type, helpLink) => {
@@ -707,12 +750,15 @@ const selectOption = (option) => {
         },
         'networkMode': () => {
             showRefreshHint.value.networkMode = true;
+        },
+        'dataSource': () => {
+            showRefreshHint.value.dataSource = true;
         }
     };
     actions[selectionType.value]?.();
     saveSettings();
     if(!['apiMode','font','fontUrl', 'proxy'].includes(selectionType.value)) closeSelection();
-    const refreshHintTypes = ['lyricsBackground', 'lyricsFontSize', 'gpuAcceleration', 'highDpi', 'apiMode', 'touchBar', 'preventAppSuspension', 'networkMode', 'font', 'proxy'];
+    const refreshHintTypes = ['lyricsBackground', 'lyricsFontSize', 'gpuAcceleration', 'highDpi', 'apiMode', 'touchBar', 'preventAppSuspension', 'networkMode', 'dataSource', 'font', 'proxy'];
     if (refreshHintTypes.includes(selectionType.value)) {
         showRefreshHint.value[selectionType.value] = true;
     }
@@ -743,6 +789,7 @@ const saveSettings = () => {
     );
     settingsToSave.shortcuts = shortcuts.value;
     localStorage.setItem('settings', JSON.stringify(settingsToSave));
+    window.dispatchEvent(new Event('settings-updated'));
     isElectron() && window.electron.ipcRenderer.send('save-settings', JSON.parse(JSON.stringify(settingsToSave)));
 };
 

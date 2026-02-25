@@ -66,8 +66,9 @@
                             <ul>
                                 <li @click="appendSelectedToQueue"><i class="fas fa-list"></i> 添加到播放列表 </li>
                                 <li @click="addSelectedToOtherPlaylist" v-if="MoeAuth.UserInfo?.userid"><i class="fas fa-folder-plus"></i> 添加到其他歌单</li>
-                                <li v-if="!isArtist && detail.list_create_userid == MoeAuth.UserInfo?.userid && route.query.listid" 
+                                <li v-if="!isArtist && detail.list_create_userid == MoeAuth.UserInfo?.userid && route.query.listid"
                                     @click="removeSelectedFromPlaylist"><i class="fas fa-trash-alt"></i> 取消收藏</li>
+                                <li v-if="isElectron" @click="batchDownloadSelected"><i class="fas fa-download"></i> 批量下载 ({{ selectedTracks.length }})</li>
                             </ul>
                         </div>
                     </div>
@@ -174,12 +175,17 @@ import { useRoute, useRouter } from 'vue-router';
 import { MoeAuthStore } from '../stores/store';
 import { useI18n } from 'vue-i18n';
 import { share } from '@/utils/utils';
+import { useDownload } from '@/composables/useDownload';
 
 const playlistSelect = ref(null);
 const { t } = useI18n();
 const MoeAuth = MoeAuthStore();
 const router = useRouter();
 const route = useRoute();
+
+// 下载功能
+const { batchDownloadMusic } = useDownload();
+const isElectron = computed(() => !!window.electron);
 
 // 判断是歌手还是歌单
 const isArtist = computed(() => !!route.query.singerid);
@@ -736,6 +742,64 @@ const removeSelectedFromPlaylist = async () => {
             return;
         }
     }
+    isBatchMenuVisible.value = false;
+};
+
+// 批量下载选中的歌曲
+const batchDownloadSelected = async () => {
+    if (selectedTracks.value.length === 0) return;
+
+    try {
+        const selectedSongs = selectedTracks.value.map(index => filteredTracks.value[index]);
+
+        // 获取所有选中歌曲的下载链接
+        const downloadPromises = selectedSongs.map(async (song) => {
+            try {
+                const response = await get('/song/url', {
+                    hash: song.hash,
+                    quality: 'high'
+                });
+
+                if (response.status === 1 && response.url) {
+                    // 获取下载链接 (url 可能是数组或字符串)
+                    let downloadUrl = '';
+                    if (Array.isArray(response.url) && response.url.length > 0) {
+                        downloadUrl = response.url[0];
+                    } else if (typeof response.url === 'string') {
+                        downloadUrl = response.url;
+                    }
+
+                    if (downloadUrl) {
+                        return {
+                            id: song.hash,
+                            name: song.name,
+                            ar: [{ name: song.author }],
+                            picUrl: song.cover,
+                            url: downloadUrl,
+                            type: response.extName || 'mp3'
+                        };
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error(`获取歌曲 ${song.name} 下载链接失败:`, error);
+                return null;
+            }
+        });
+
+        const songsToDownload = (await Promise.all(downloadPromises)).filter(song => song !== null);
+
+        if (songsToDownload.length > 0) {
+            await batchDownloadMusic(songsToDownload);
+            $message.success(`已添加 ${songsToDownload.length} 首歌曲到下载队列`);
+        } else {
+            $message.error('获取下载链接失败');
+        }
+    } catch (error) {
+        console.error('批量下载失败:', error);
+        $message.error('批量下载失败');
+    }
+
     isBatchMenuVisible.value = false;
 };
 

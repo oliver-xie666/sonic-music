@@ -10,6 +10,7 @@ import { exec } from 'child_process';
 import { checkForUpdates } from './updater.js';
 import { Notification } from 'electron';
 import extensionManager from './extensionManager.js';
+import * as downloadManager from './downloadManager.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const store = new Store();
 const { TouchBarLabel, TouchBarButton, TouchBarGroup, TouchBarSpacer } = TouchBar;
@@ -60,7 +61,8 @@ export function createWindow() {
             contextIsolation: true,
             nodeIntegration: false,
             sandbox: false,
-            webSecurity: true,
+            webSecurity: false,
+            allowRunningInsecureContent: true,
             zoomFactor: 1.0
         },
         icon: getIconPath('icon.ico')
@@ -78,8 +80,10 @@ export function createWindow() {
         if(savedConfig?.networkMode == 'devnet'){ //开发网
             mainWindow.loadURL('http://localhost:8080');
         }else if(savedConfig?.networkMode == 'testnet'){ //测试网
+            // 打包后使用正确的路径
             mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
         }else{ //主网
+            // 打包后使用正确的路径
             mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
         }
     }
@@ -290,6 +294,15 @@ export function createTray(mainWindow, title = '') {
             }
         },
         {
+            label: '重启应用',
+            icon: getIconPath('restart.png', 'menu'),
+            click: () => {
+                app.relaunch();
+                app.isQuitting = true;
+                app.quit();
+            }
+        },
+        {
             label: '显示/隐藏',
             accelerator: 'CmdOrCtrl+Shift+S',
             icon: getIconPath('show.png', 'menu'),
@@ -426,17 +439,18 @@ export function startApiServer() {
         let apiPath = '';
         if (isDev) {
             return resolve();
-            // apiPath = path.join(__dirname, '../api/app_api');
         } else {
+            // extraFiles 会将文件放到应用根目录，而不是 resources 目录
+            const appPath = path.dirname(app.getPath('exe'));
             switch (process.platform) {
                 case 'win32':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_win.exe');
+                    apiPath = path.join(appPath, 'api', 'app_win.exe');
                     break;
                 case 'darwin':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_macos');
+                    apiPath = path.join(appPath, 'api', 'app_macos');
                     break;
                 case 'linux':
-                    apiPath = path.join(process.resourcesPath, 'api', 'app_linux');
+                    apiPath = path.join(appPath, 'api', 'app_linux');
                     break;
                 default:
                     reject(new Error(`Unsupported platform: ${process.platform}`));
@@ -459,7 +473,13 @@ export function startApiServer() {
         const savedConfig = store.get('settings') || {};
         const proxy = savedConfig?.proxy;
         const proxyUrl = savedConfig?.proxyUrl;
-        const Args = ['--platform=lite'];
+        const dataSource = savedConfig?.dataSource || 'official';
+
+        const Args = [];
+        if (dataSource === 'concept') {
+            Args.push('--platform=lite');
+            log.info('API data source: concept (lite mode)');
+        }
         if (proxy === 'on' && proxyUrl) {
             const proxyAddress = String(proxyUrl).trim();
             if (proxyAddress) {
@@ -805,11 +825,11 @@ export function sendHashAfterLoad(mainWindow) {
     if (mainWindow) {
         protocolMainWindow = mainWindow;
     }
-    
+
     if ((hash || listid) && protocolMainWindow) {
         protocolMainWindow.webContents.on('did-finish-load', () => {
             setTimeout(() => {
-                protocolMainWindow.webContents.send('url-params', { 
+                protocolMainWindow.webContents.send('url-params', {
                     hash,
                     listid,
                     urlPath: 'share'
@@ -817,4 +837,73 @@ export function sendHashAfterLoad(mainWindow) {
             }, 1000);
         });
     }
+}
+
+// 注册下载相关的 IPC 处理器
+export function registerDownloadHandlers() {
+    // 下载音乐
+    ipcMain.on('download-music', downloadManager.handleDownloadRequest);
+
+    // 获取已下载音乐列表
+    ipcMain.handle('get-downloaded-music', async () => {
+        return await downloadManager.getDownloadedMusic();
+    });
+
+    // 删除已下载的音乐
+    ipcMain.handle('delete-downloaded-music', async (event, filePath) => {
+        return await downloadManager.deleteDownloadedMusic(filePath);
+    });
+
+    // 清空下载记录
+    ipcMain.handle('clear-downloaded-music', () => {
+        return downloadManager.clearDownloadedMusic();
+    });
+
+    // 检查音乐是否已下载
+    ipcMain.handle('check-music-downloaded', (event, filename) => {
+        return downloadManager.checkMusicDownloaded(filename);
+    });
+
+    // 检查歌曲是否已下载(通过ID)
+    ipcMain.handle('check-song-downloaded', (event, songId) => {
+        return downloadManager.checkSongDownloaded(songId);
+    });
+
+    // 选择下载目录
+    ipcMain.handle('select-directory', async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ['openDirectory']
+        });
+        if (!result.canceled && result.filePaths.length > 0) {
+            return result.filePaths[0];
+        }
+        return null;
+    });
+
+    // 在文件管理器中打开目录
+    ipcMain.handle('open-directory', async (event, dirPath) => {
+        try {
+            await shell.openPath(dirPath);
+            return true;
+        } catch (error) {
+            console.error('打开目录失败:', error);
+            return false;
+        }
+    });
+
+    // 获取系统下载文件夹路径
+    ipcMain.handle('get-downloads-path', () => {
+        return app.getPath('downloads');
+    });
+
+    // 获取配置值
+    ipcMain.handle('get-store-value', (event, key) => {
+        return store.get(key);
+    });
+
+    // 设置配置值
+    ipcMain.handle('set-store-value', (event, key, value) => {
+        store.set(key, value);
+        return true;
+    });
 }

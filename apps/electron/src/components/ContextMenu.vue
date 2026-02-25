@@ -15,16 +15,18 @@
             <li @click="shareSong(contextSong)"><i class="fa-solid fa-share-nodes"></i> 分享</li>
             <li v-if="MoeAuth.isAuthenticated && listId && contextSong.userid === MoeAuth.UserInfo.userid" @click="cancel()">取消收藏</li>
             <li v-if="MoeAuth.isAuthenticated" @click="addToNext(contextSong)">添加到下一首</li>
+            <li v-if="isElectron && isDownloadEnabled" @click="downloadSong(contextSong)"><i class="fa-solid fa-download"></i> 下载</li>
         </ul>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { get } from '../utils/request';
 import { MoeAuthStore } from '../stores/store';
 import i18n from '@/utils/i18n';
 import { share } from '@/utils/utils';
+import { useDownload } from '@/composables/useDownload';
 const MoeAuth = MoeAuthStore();
 const showContextMenu = ref(false);
 const showSubMenu = ref(false);
@@ -33,6 +35,16 @@ const playlists = ref([]);
 const listId = ref(0);
 const contextSong = ref(null);
 let events;
+
+// 检查是否在 Electron 环境
+const isElectron = computed(() => !!window.electron);
+const isDownloadEnabled = computed(() => {
+    const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+    return settings?.enableDownload === 'on';
+});
+
+// 下载功能
+const { downloadMusic } = useDownload();
 // 右键菜单显示与隐藏
 const openContextMenu = (event, song, Id) => {
     events = event
@@ -107,6 +119,75 @@ const addToNext = async (song) => {
 const hideSubMenu = () => {
     showSubMenu.value = false;
 };
+
+// 下载歌曲
+const downloadSong = async (song) => {
+    if (!song) return;
+
+    try {
+        // 根据当前音质设置获取下载链接
+        const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+        const data = {
+            hash: song.FileHash
+        };
+
+        // 音质映射：将设置中的音质值映射到 API 的 quality 参数
+        if (settings?.qualityCompatibility === 'off') {
+            const qualityMap = {
+                'normal': '128',
+                'high': '320',
+                'lossless': 'flac',
+                'hires': 'high',
+                'viper_atmos': 'viper_atmos',
+                'viper_clear': 'viper_clear',
+                'viper_tape': 'viper_tape'
+            };
+            if (settings?.quality && qualityMap[settings.quality]) {
+                data.quality = qualityMap[settings.quality];
+            }
+        }
+
+        // 获取歌曲播放链接
+        const response = await get('/song/url', data);
+
+        if (response.status === 1 && response.url) {
+            // 获取下载链接 (url 可能是数组或字符串)
+            let downloadUrl = '';
+            if (Array.isArray(response.url) && response.url.length > 0) {
+                downloadUrl = response.url[0];
+            } else if (typeof response.url === 'string') {
+                downloadUrl = response.url;
+            }
+
+            if (!downloadUrl) {
+                $message.error('获取下载链接失败');
+                hideContextMenu();
+                return;
+            }
+
+            // 构建歌曲信息
+            const songInfo = {
+                id: song.FileHash,
+                name: song.OriSongName?.split(' - ')[0] || song.name,
+                ar: [{ name: song.OriSongName?.split(' - ')[1] || song.author }],
+                picUrl: song.cover,
+                url: downloadUrl,
+                type: response.extName || 'mp3'
+            };
+
+            await downloadMusic(songInfo);
+            $message.success('已添加到下载队列');
+        } else {
+            $message.error('获取下载链接失败');
+        }
+    } catch (error) {
+        console.error('下载失败:', error);
+        $message.error('下载失败');
+    }
+
+    hideContextMenu();
+};
+
 const handleClickOutside = (event) => {
     if (!event.target.closest(".context-menu")) {
         hideContextMenu();

@@ -6,6 +6,7 @@
 // ancient 尤克里里
 // dj dj
 module.exports = (params, useAxios) => {
+  const { randomString } = require('../util/util');
   const quality = ['piano', 'acappella', 'subwoofer', 'ancient', 'dj', 'surnay'].includes(params.quality)
     ? `magic_${params?.quality}`
     : params.quality;
@@ -19,7 +20,7 @@ module.exports = (params, useAxios) => {
     area_code: 1,
     hash: (params?.hash || '').toLowerCase(),
     ssa_flag: 'is_fromtrack',
-    version: 11040,
+    version: 11436,
     page_id,
     quality: quality || 128,
     album_audio_id: Number(params.album_audio_id ?? 0),
@@ -42,6 +43,6 @@ module.exports = (params, useAxios) => {
     headers: { 'x-router': 'trackercdn.kugou.com' },
     encryptKey: true,
     notSign: true,
-    cookie: params?.cookie || {},
+    cookie: Object.assign({}, {dfid: randomString(24)}, params?.cookie),
   });
 };
