@@ -20,6 +20,7 @@ out
 *.pem
 .env*.local
 .turbo
+.omc
 
 # Debug
 npm-debug.log*

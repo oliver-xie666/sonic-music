@@ -42,16 +42,6 @@
     "requiredBackgroundModes": ["audio"]
   },
   "h5": {
-    "devServer": {
-      "port": 5174,
-      "proxy": {
-        "/api": {
-          "target": "http://127.0.0.1:6521",
-          "changeOrigin": true,
-          "rewrite": "path => path.replace(/^\/api/, '')"
-        }
-      }
-    },
     "title": "Sonic Music",
     "router": {
       "mode": "hash"

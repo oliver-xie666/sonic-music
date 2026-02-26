@@ -1,81 +1,81 @@
 {
   "pages": [
     {
-      "path": "src/pages/home/index",
+      "path": "pages/home/index",
       "style": {
         "navigationBarTitleText": "首页",
         "enablePullDownRefresh": true
       }
     },
     {
-      "path": "src/pages/discover/index",
+      "path": "pages/discover/index",
       "style": {
         "navigationBarTitleText": "发现"
       }
     },
     {
-      "path": "src/pages/search/index",
+      "path": "pages/search/index",
       "style": {
         "navigationBarTitleText": "搜索"
       }
     },
     {
-      "path": "src/pages/library/index",
+      "path": "pages/library/index",
       "style": {
         "navigationBarTitleText": "我的音乐"
       }
     },
     {
-      "path": "src/pages/search/result",
+      "path": "pages/search/result",
       "style": {
         "navigationBarTitleText": "搜索结果"
       }
     },
     {
-      "path": "src/pages/playlist/detail",
+      "path": "pages/playlist/detail",
       "style": {
         "navigationBarTitleText": "歌单详情"
       }
     },
     {
-      "path": "src/pages/player/index",
+      "path": "pages/player/index",
       "style": {
         "navigationBarTitleText": "",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "src/pages/settings/index",
+      "path": "pages/settings/index",
       "style": {
         "navigationBarTitleText": "设置"
       }
     },
     {
-      "path": "src/pages/login/index",
+      "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录"
       }
     },
     {
-      "path": "src/pages/artist/detail",
+      "path": "pages/artist/detail",
       "style": {
         "navigationBarTitleText": "歌手详情"
       }
     },
     {
-      "path": "src/pages/album/detail",
+      "path": "pages/album/detail",
       "style": {
         "navigationBarTitleText": "专辑详情"
       }
     },
     {
-      "path": "src/pages/ranking/index",
+      "path": "pages/ranking/index",
       "style": {
         "navigationBarTitleText": "排行榜"
       }
     },
     {
-      "path": "src/pages/ranking/detail",
+      "path": "pages/ranking/detail",
       "style": {
         "navigationBarTitleText": "排行榜详情"
       }
@@ -94,28 +94,28 @@
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "src/pages/home/index",
+        "pagePath": "pages/home/index",
         "text": "首页",
-        "iconPath": "src/static/icons/home.png",
-        "selectedIconPath": "src/static/icons/home-active.png"
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home-active.png"
       },
       {
-        "pagePath": "src/pages/discover/index",
+        "pagePath": "pages/discover/index",
         "text": "发现",
-        "iconPath": "src/static/icons/discover.png",
-        "selectedIconPath": "src/static/icons/discover-active.png"
+        "iconPath": "static/icons/discover.png",
+        "selectedIconPath": "static/icons/discover-active.png"
       },
       {
-        "pagePath": "src/pages/search/index",
+        "pagePath": "pages/search/index",
         "text": "搜索",
-        "iconPath": "src/static/icons/search.png",
-        "selectedIconPath": "src/static/icons/search-active.png"
+        "iconPath": "static/icons/search.png",
+        "selectedIconPath": "static/icons/search-active.png"
       },
       {
-        "pagePath": "src/pages/library/index",
+        "pagePath": "pages/library/index",
         "text": "我的",
-        "iconPath": "src/static/icons/library.png",
-        "selectedIconPath": "src/static/icons/library-active.png"
+        "iconPath": "static/icons/library.png",
+        "selectedIconPath": "static/icons/library-active.png"
       }
     ]
   }

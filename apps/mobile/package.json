@@ -23,6 +23,6 @@
     "@dcloudio/types": "*",
     "@dcloudio/uni-cli-shared": "3.0.0-4020920240930001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4020920240930001",
-    "vite": "^5.0.0"
+    "vite": "5.4.19"
   }
 }

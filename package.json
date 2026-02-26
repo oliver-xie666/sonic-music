@@ -37,6 +37,25 @@
   "devDependencies": {
     "prettier": "^3.3.3"
   },
+  "pnpm": {
+    "packageExtensions": {
+      "@dcloudio/uni-h5-vite": {
+        "peerDependencies": {
+          "vite": "^5.0.0"
+        }
+      },
+      "@dcloudio/vite-plugin-uni": {
+        "peerDependencies": {
+          "vite": "^5.0.0"
+        }
+      },
+      "@dcloudio/uni-cli-shared": {
+        "peerDependencies": {
+          "vite": "^5.0.0"
+        }
+      }
+    }
+  },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=8.0.0"
