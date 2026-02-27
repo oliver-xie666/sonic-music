@@ -11,3 +11,7 @@ export { QUALITY_MAP, THEME_COLORS, DEFAULT_API_URL } from './constants/index.js
 export { MoeAuthStore } from './stores/auth.js'
 export { useMusicQueueStore } from './stores/musicQueue.js'
 export { useSettingsStore } from './stores/settings.js'
+
+// Composables (platform-agnostic)
+export { usePlaybackMode } from './composables/usePlaybackMode.js'
+export { useQueue } from './composables/useQueue.js'

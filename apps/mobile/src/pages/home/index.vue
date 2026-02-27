@@ -2,176 +2,296 @@
   <view class="page">
     <view class="header">
       <text class="title">Sonic Music</text>
-      <text class="subtitle">发现你的音乐世界</text>
-    </view>
-
-    <view class="section">
-      <text class="section-title">推荐歌单</text>
-      <view class="playlist-grid">
-        <view class="playlist-card" v-for="item in playlists" :key="item.id">
-          <view class="cover" :style="{ background: item.color }">
-            <text class="cover-icon">{{ item.icon }}</text>
-          </view>
-          <text class="name">{{ item.name }}</text>
-        </view>
+      <view class="header-right" @click="goToSettings">
+        <text class="settings-icon">⚙</text>
       </view>
     </view>
 
+    <!-- 每日推荐 -->
     <view class="section">
-      <text class="section-title">最近播放</text>
-      <view class="song-list">
-        <view class="song-item" v-for="song in songs" :key="song.id">
-          <view class="song-cover" :style="{ background: song.color }">
-            <text class="song-icon">♪</text>
-          </view>
+      <view class="section-header">
+        <text class="section-title">每日推荐</text>
+        <text class="section-more" @click="playAllRecommend">播放全部</text>
+      </view>
+      <view v-if="loadingRecommend" class="song-list">
+        <view v-for="i in 4" :key="i" class="song-item skeleton">
+          <view class="song-cover skeleton-box" />
           <view class="song-info">
-            <text class="song-name">{{ song.name }}</text>
-            <text class="song-artist">{{ song.artist }}</text>
+            <view class="skeleton-line" style="width: 60%;" />
+            <view class="skeleton-line" style="width: 40%; margin-top: 8rpx;" />
           </view>
-          <text class="song-duration">{{ song.duration }}</text>
+        </view>
+      </view>
+      <view v-else class="song-list">
+        <view
+          v-for="(song, idx) in recommendSongs"
+          :key="song.hash"
+          class="song-item"
+          :class="{ playing: currentSong?.hash === song.hash }"
+          @click="onPlaySong(song)"
+        >
+          <view class="song-index">
+            <text v-if="currentSong?.hash !== song.hash" class="index-num">{{ idx + 1 }}</text>
+            <text v-else class="playing-dot">♫</text>
+          </view>
+          <image class="song-cover" :src="getCover(song.cover || song.img || '', 120)" mode="aspectFill" />
+          <view class="song-info">
+            <text class="song-name">{{ song.filename || song.name }}</text>
+            <text class="song-artist">{{ song.singername || song.author }}</text>
+          </view>
+          <text class="song-duration">{{ formatMilliseconds(song.timelen || song.timeLength) }}</text>
         </view>
       </view>
     </view>
+
+    <!-- 推荐歌单 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">推荐歌单</text>
+      </view>
+      <view v-if="loadingPlaylists" class="playlist-grid">
+        <view v-for="i in 4" :key="i" class="playlist-card skeleton">
+          <view class="playlist-cover skeleton-box" />
+          <view class="skeleton-line" style="margin: 12rpx 16rpx; width: 70%;" />
+        </view>
+      </view>
+      <scroll-view v-else class="playlist-scroll" scroll-x>
+        <view class="playlist-row">
+          <view
+            v-for="item in playlists"
+            :key="item.id || item.playlist_id"
+            class="playlist-card"
+            @click="goToPlaylist(item)"
+          >
+            <image class="playlist-cover" :src="getCover(item.img || item.cover || '', 240)" mode="aspectFill" />
+            <text class="playlist-name">{{ item.name || item.playlist_name }}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 底部占位（MiniPlayer 高度） -->
+    <view style="height: 160rpx;" />
   </view>
 </template>
 
 <script setup>
-const playlists = [
-  { id: 1, name: '华语热歌', icon: '🎵', color: 'linear-gradient(135deg, #FF69B4, #FFB6C1)' },
-  { id: 2, name: '轻音乐', icon: '🎹', color: 'linear-gradient(135deg, #4A90E2, #AEDFF7)' },
-  { id: 3, name: '电子音乐', icon: '🎧', color: 'linear-gradient(135deg, #34C759, #A7F3D0)' },
-  { id: 4, name: '经典老歌', icon: '🎸', color: 'linear-gradient(135deg, #FF9500, #FFD60A)' },
-]
+import { ref, computed } from 'vue'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
+import { usePlayerStore } from '@/stores/player'
+import { useAudioPlayer } from '@/composables/useAudioPlayer'
+import { getRecommend } from '@/api/song'
+import { getPlaylistList } from '@/api/playlist'
+import { getCover } from '@sonic-music/shared/utils/cover'
+import { formatMilliseconds } from '@sonic-music/shared/utils/time'
 
-const songs = [
-  { id: 1, name: '晴天', artist: '周杰伦', duration: '4:29', color: 'linear-gradient(135deg, #FF69B4, #FFB6C1)' },
-  { id: 2, name: '稻香', artist: '周杰伦', duration: '3:42', color: 'linear-gradient(135deg, #34C759, #A7F3D0)' },
-  { id: 3, name: '夜曲', artist: '周杰伦', duration: '4:01', color: 'linear-gradient(135deg, #4A90E2, #AEDFF7)' },
-  { id: 4, name: '七里香', artist: '周杰伦', duration: '4:59', color: 'linear-gradient(135deg, #FF9500, #FFD60A)' },
-]
+const playerStore = usePlayerStore()
+const { loadAndPlay } = useAudioPlayer()
+
+const currentSong = computed(() => playerStore.currentSong)
+const recommendSongs = ref([])
+const playlists = ref([])
+const loadingRecommend = ref(true)
+const loadingPlaylists = ref(true)
+
+async function fetchRecommend() {
+  loadingRecommend.value = true
+  try {
+    const res = await getRecommend()
+    recommendSongs.value = (res.data || res.list || []).slice(0, 10)
+  } catch (e) {
+    console.error('[home] fetchRecommend error', e)
+  } finally {
+    loadingRecommend.value = false
+  }
+}
+
+async function fetchPlaylists() {
+  loadingPlaylists.value = true
+  try {
+    const res = await getPlaylistList({ page: 1, pagesize: 8 })
+    playlists.value = res.data || res.list || []
+  } catch (e) {
+    console.error('[home] fetchPlaylists error', e)
+  } finally {
+    loadingPlaylists.value = false
+  }
+}
+
+function onPlaySong(song) {
+  loadAndPlay(song)
+}
+
+function playAllRecommend() {
+  if (!recommendSongs.value.length) return
+  loadAndPlay(recommendSongs.value[0])
+}
+
+function goToPlaylist(item) {
+  const id = item.id || item.playlist_id
+  uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
+}
+
+function goToSettings() {
+  uni.navigateTo({ url: '/pages/settings/index' })
+}
+
+onLoad(() => {
+  fetchRecommend()
+  fetchPlaylists()
+})
+
+onPullDownRefresh(async () => {
+  await Promise.all([fetchRecommend(), fetchPlaylists()])
+  uni.stopPullDownRefresh()
+})
 </script>
 
 <style scoped>
 .page {
-  padding: 40rpx 30rpx;
+  padding: 40rpx 30rpx 0;
   min-height: 100vh;
-  background: #FFF0F5;
+  background: var(--background-color, #FFF0F5);
 }
-
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 50rpx;
 }
-
 .title {
-  display: block;
   font-size: 52rpx;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary, #333);
 }
-
-.subtitle {
-  display: block;
-  font-size: 28rpx;
-  color: #999;
-  margin-top: 8rpx;
+.settings-icon {
+  font-size: 44rpx;
+  color: var(--text-secondary, #999);
 }
-
 .section {
   margin-bottom: 50rpx;
 }
-
-.section-title {
-  display: block;
-  font-size: 34rpx;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 24rpx;
-}
-
-.playlist-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20rpx;
-}
-
-.playlist-card {
-  border-radius: 16rpx;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4rpx 20rpx rgba(255, 105, 180, 0.1);
-}
-
-.cover {
-  height: 180rpx;
+.section-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
 }
-
-.cover-icon {
-  font-size: 60rpx;
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-primary, #333);
 }
-
-.name {
-  display: block;
+.section-more {
   font-size: 26rpx;
-  color: #333;
-  padding: 16rpx;
-  font-weight: 500;
+  color: var(--primary-color, #FF69B4);
 }
-
 .song-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 8rpx;
 }
-
 .song-item {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  background: #fff;
+  padding: 16rpx;
   border-radius: 16rpx;
-  padding: 20rpx;
-  box-shadow: 0 4rpx 20rpx rgba(255, 105, 180, 0.08);
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(255, 105, 180, 0.06);
 }
-
-.song-cover {
-  width: 90rpx;
-  height: 90rpx;
-  border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.song-item.playing {
+  background: rgba(255, 105, 180, 0.06);
+}
+.song-index {
+  width: 40rpx;
+  text-align: center;
   flex-shrink: 0;
 }
-
-.song-icon {
-  font-size: 36rpx;
-  color: #fff;
+.index-num {
+  font-size: 26rpx;
+  color: var(--text-secondary, #999);
 }
-
+.playing-dot {
+  font-size: 28rpx;
+  color: var(--primary-color, #FF69B4);
+}
+.song-cover {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 10rpx;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
 .song-info {
   flex: 1;
+  overflow: hidden;
 }
-
 .song-name {
   display: block;
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary, #333);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .song-artist {
   display: block;
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-secondary, #999);
   margin-top: 6rpx;
 }
-
 .song-duration {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #bbb;
   flex-shrink: 0;
+}
+.playlist-scroll {
+  width: 100%;
+}
+.playlist-row {
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 10rpx;
+}
+.playlist-card {
+  flex-shrink: 0;
+  width: 220rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(255, 105, 180, 0.1);
+}
+.playlist-cover {
+  width: 220rpx;
+  height: 220rpx;
+  background: #f5f5f5;
+}
+.playlist-name {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-primary, #333);
+  padding: 12rpx 14rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Skeleton */
+.skeleton-box {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.skeleton-line {
+  height: 24rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <view>
+    <MiniPlayer />
   </view>
 </template>
 
@@ -7,6 +8,7 @@
 import { onLaunch, onShow } from '@dcloudio/uni-app'
 import { useSettingsStore } from '@sonic-music/shared/stores/settings'
 import { applyTheme } from '@/utils/theme'
+import MiniPlayer from '@/components/player/MiniPlayer.vue'
 
 const settingsStore = useSettingsStore()
 

@@ -12,7 +12,9 @@
     "./stores/auth": "./src/stores/auth.js",
     "./stores/musicQueue": "./src/stores/musicQueue.js",
     "./stores/settings": "./src/stores/settings.js",
-    "./constants": "./src/constants/index.js"
+    "./constants": "./src/constants/index.js",
+    "./composables/usePlaybackMode": "./src/composables/usePlaybackMode.js",
+    "./composables/useQueue": "./src/composables/useQueue.js"
   },
   "dependencies": {
     "pinia": "^2.1.0"
