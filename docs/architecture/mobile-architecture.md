@@ -69,7 +69,7 @@ packages/shared/src/
 | 我的 | pages/library/index.vue | ✅ 完成 |
 | 设置 | pages/settings/index.vue | ✅ 完成 |
 | 全屏播放器 | pages/player/index.vue | ✅ 完成 |
-| 歌单详情 | pages/playlist/detail.vue | ⬜ 待开发 |
+| 歌单详情 | pages/playlist/detail.vue | ✅ 完成 |
 | 排行榜 | pages/ranking/index.vue | ⬜ 待开发 |
 | 登录 | pages/login/index.vue | ⬜ 待开发 |
 | 歌手详情 | pages/artist/detail.vue | ⬜ 待开发 |
@@ -190,7 +190,7 @@ Electron（侧边栏）              Mobile（底部导航）
 | 1. mobile 脚手架 + API 层 | ✅ 完成 | api/client.js + api/*.js |
 | 2. 播放器核心 | ✅ 完成 | stores/player + useAudioPlayer + MiniPlayer |
 | 3. 主要页面 | ✅ 完成 | home/search/discover/library/settings/player |
-| 4. 歌单详情页 | ⬜ 下一个 | pages/playlist/detail.vue |
+| 4. 歌单详情页 | ✅ 完成 | pages/playlist/detail.vue |
 | 5. 排行榜页 | ⬜ | pages/ranking/index.vue |
 | 6. 登录页 | ⬜ | pages/login/index.vue |
 | 7. 歌手详情页 | ⬜ | pages/artist/detail.vue |
