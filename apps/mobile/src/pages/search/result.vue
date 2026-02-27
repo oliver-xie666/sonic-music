@@ -78,8 +78,8 @@ async function fetchResults(reset = false) {
   loading.value = true
   try {
     const res = await search({ keyword: keyword.value, page: page.value, pagesize: 20 })
-    const list = res.data || res.lists || res.list || []
-    total.value = res.total || 0
+    const list = res.data?.lists || res.lists || res.list || []
+    total.value = res.data?.total || res.total || 0
     songs.value.push(...list)
     hasMore.value = list.length === 20
     page.value++

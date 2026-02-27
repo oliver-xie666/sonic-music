@@ -34,12 +34,12 @@
             <text v-if="currentSong?.hash !== song.hash" class="index-num">{{ idx + 1 }}</text>
             <text v-else class="playing-dot">♫</text>
           </view>
-          <image class="song-cover" :src="getCover(song.cover || song.img || '', 120)" mode="aspectFill" />
+          <image class="song-cover" :src="getCover(song.sizable_cover || song.cover || song.img || '', 120)" mode="aspectFill" />
           <view class="song-info">
             <text class="song-name">{{ song.filename || song.name }}</text>
-            <text class="song-artist">{{ song.singername || song.author }}</text>
+            <text class="song-artist">{{ song.author_name || song.singername || song.author }}</text>
           </view>
-          <text class="song-duration">{{ formatMilliseconds(song.timelen || song.timeLength) }}</text>
+          <text class="song-duration">{{ song.time_length ? formatSeconds(song.time_length) : formatMilliseconds(song.timelen) }}</text>
         </view>
       </view>
     </view>
@@ -59,12 +59,12 @@
         <view class="playlist-row">
           <view
             v-for="item in playlists"
-            :key="item.id || item.playlist_id"
+            :key="item.global_collection_id || item.id"
             class="playlist-card"
             @click="goToPlaylist(item)"
           >
-            <image class="playlist-cover" :src="getCover(item.img || item.cover || '', 240)" mode="aspectFill" />
-            <text class="playlist-name">{{ item.name || item.playlist_name }}</text>
+            <image class="playlist-cover" :src="getCover(item.flexible_cover || item.img || item.cover || '', 240)" mode="aspectFill" />
+            <text class="playlist-name">{{ item.specialname || item.name }}</text>
           </view>
         </view>
       </scroll-view>
@@ -83,7 +83,7 @@ import { useAudioPlayer } from '@/composables/useAudioPlayer'
 import { getRecommend } from '@/api/song'
 import { getPlaylistList } from '@/api/playlist'
 import { getCover } from '@sonic-music/shared/utils/cover'
-import { formatMilliseconds } from '@sonic-music/shared/utils/time'
+import { formatMilliseconds, formatSeconds } from '@sonic-music/shared/utils/time'
 
 const playerStore = usePlayerStore()
 const { loadAndPlay } = useAudioPlayer()
@@ -98,7 +98,7 @@ async function fetchRecommend() {
   loadingRecommend.value = true
   try {
     const res = await getRecommend()
-    recommendSongs.value = (res.data || res.list || []).slice(0, 10)
+    recommendSongs.value = (res.song_list || res.data?.song_list || []).slice(0, 10)
   } catch (e) {
     console.error('[home] fetchRecommend error', e)
   } finally {
@@ -110,7 +110,7 @@ async function fetchPlaylists() {
   loadingPlaylists.value = true
   try {
     const res = await getPlaylistList({ page: 1, pagesize: 8 })
-    playlists.value = res.data || res.list || []
+    playlists.value = res.data?.special_list || res.data || res.list || []
   } catch (e) {
     console.error('[home] fetchPlaylists error', e)
   } finally {
@@ -128,7 +128,7 @@ function playAllRecommend() {
 }
 
 function goToPlaylist(item) {
-  const id = item.id || item.playlist_id
+  const id = item.global_collection_id || item.id || item.playlist_id
   uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
 }
 

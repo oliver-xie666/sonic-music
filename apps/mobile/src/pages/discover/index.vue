@@ -23,12 +23,12 @@
       <view v-else class="playlist-grid">
         <view
           v-for="item in playlists"
-          :key="item.id || item.playlist_id"
+          :key="item.global_collection_id || item.id"
           class="playlist-card"
           @click="goToPlaylist(item)"
         >
-          <image class="playlist-cover" :src="getCover(item.img || item.cover || '', 240)" mode="aspectFill" />
-          <text class="playlist-name">{{ item.name || item.playlist_name }}</text>
+          <image class="playlist-cover" :src="getCover(item.flexible_cover || item.img || item.cover || '', 240)" mode="aspectFill" />
+          <text class="playlist-name">{{ item.specialname || item.name }}</text>
         </view>
       </view>
     </view>
@@ -50,7 +50,7 @@ async function fetchPlaylists() {
   loading.value = true
   try {
     const res = await getPlaylistList({ page: 1, pagesize: 12 })
-    playlists.value = res.data || res.list || []
+    playlists.value = res.data?.special_list || res.data || res.list || []
   } catch (e) {
     console.error('[discover] fetchPlaylists error', e)
   } finally {
@@ -63,7 +63,7 @@ function goToRanking() {
 }
 
 function goToPlaylist(item) {
-  const id = item.id || item.playlist_id
+  const id = item.global_collection_id || item.id || item.playlist_id
   uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
 }
 

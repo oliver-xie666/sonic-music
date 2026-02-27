@@ -21,6 +21,7 @@ export default defineConfig({
       '/login': { target: 'http://127.0.0.1:6521', changeOrigin: true },
       '/lyric': { target: 'http://127.0.0.1:6521', changeOrigin: true },
       '/artist': { target: 'http://127.0.0.1:6521', changeOrigin: true },
+      '/top': { target: 'http://127.0.0.1:6521', changeOrigin: true },
     }
   }
 })
