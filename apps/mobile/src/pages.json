@@ -79,6 +79,12 @@
       "style": {
         "navigationBarTitleText": "排行榜详情"
       }
+    },
+    {
+      "path": "pages/download/index",
+      "style": {
+        "navigationBarTitleText": "下载管理"
+      }
     }
   ],
   "globalStyle": {
