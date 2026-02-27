@@ -70,6 +70,46 @@
       </scroll-view>
     </view>
 
+    <!-- Sonic Radio -->
+    <view class="section">
+      <view class="section-header">
+        <view class="radio-title-row">
+          <text class="section-title">🎵 Sonic Radio</text>
+          <text class="radio-subtitle">{{ radioModes[radioModeIndex].label }}</text>
+        </view>
+        <text class="section-more" @click="switchRadioMode">切换</text>
+      </view>
+      <view v-if="loadingRadio" class="song-list">
+        <view v-for="i in 4" :key="i" class="song-item skeleton">
+          <view class="song-cover skeleton-box" />
+          <view class="song-info">
+            <view class="skeleton-line" style="width: 60%;" />
+            <view class="skeleton-line" style="width: 40%; margin-top: 8rpx;" />
+          </view>
+        </view>
+      </view>
+      <view v-else class="song-list">
+        <view
+          v-for="(song, idx) in radioSongs"
+          :key="song.hash"
+          class="song-item"
+          :class="{ playing: currentSong?.hash === song.hash }"
+          @click="onPlaySong(song)"
+        >
+          <view class="song-index">
+            <text v-if="currentSong?.hash !== song.hash" class="index-num">{{ idx + 1 }}</text>
+            <text v-else class="playing-dot">♫</text>
+          </view>
+          <image class="song-cover" :src="getCover(song.sizable_cover || '', 120)" mode="aspectFill" />
+          <view class="song-info">
+            <text class="song-name">{{ song.songname || song.filename }}</text>
+            <text class="song-artist">{{ song.author_name }}</text>
+          </view>
+          <text class="song-duration">{{ formatSeconds(song.time_length) }}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 底部占位（MiniPlayer 高度） -->
     <view style="height: 160rpx;" />
   </view>
@@ -82,6 +122,7 @@ import { usePlayerStore } from '@/stores/player'
 import { useAudioPlayer } from '@/composables/useAudioPlayer'
 import { getRecommend } from '@/api/song'
 import { getPlaylistList } from '@/api/playlist'
+import { getRadioSongs } from '@/api/radio'
 import { getCover } from '@sonic-music/shared/utils/cover'
 import { formatMilliseconds, formatSeconds } from '@sonic-music/shared/utils/time'
 
@@ -93,6 +134,17 @@ const recommendSongs = ref([])
 const playlists = ref([])
 const loadingRecommend = ref(true)
 const loadingPlaylists = ref(true)
+
+const radioModes = [
+  { id: 1, label: '💖 私人推荐' },
+  { id: 2, label: '🎶 经典老歌' },
+  { id: 3, label: '🔥 热门歌曲' },
+  { id: 4, label: '💎 小众珍藏' },
+  { id: 6, label: '👑 VIP精选' },
+]
+const radioModeIndex = ref(0)
+const radioSongs = ref([])
+const loadingRadio = ref(true)
 
 async function fetchRecommend() {
   loadingRecommend.value = true
@@ -118,6 +170,24 @@ async function fetchPlaylists() {
   }
 }
 
+async function fetchRadio() {
+  loadingRadio.value = true
+  try {
+    const mode = radioModes[radioModeIndex.value]
+    const res = await getRadioSongs(mode.id)
+    radioSongs.value = (res.song_list || res.data?.song_list || []).slice(0, 20)
+  } catch (e) {
+    console.error('[home] fetchRadio error', e)
+  } finally {
+    loadingRadio.value = false
+  }
+}
+
+function switchRadioMode() {
+  radioModeIndex.value = (radioModeIndex.value + 1) % radioModes.length
+  fetchRadio()
+}
+
 function onPlaySong(song) {
   loadAndPlay(song)
 }
@@ -139,10 +209,11 @@ function goToSettings() {
 onLoad(() => {
   fetchRecommend()
   fetchPlaylists()
+  fetchRadio()
 })
 
 onPullDownRefresh(async () => {
-  await Promise.all([fetchRecommend(), fetchPlaylists()])
+  await Promise.all([fetchRecommend(), fetchPlaylists(), fetchRadio()])
   uni.stopPullDownRefresh()
 })
 </script>
@@ -185,6 +256,15 @@ onPullDownRefresh(async () => {
 .section-more {
   font-size: 26rpx;
   color: var(--primary-color, #FF69B4);
+}
+.radio-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.radio-subtitle {
+  font-size: 24rpx;
+  color: var(--text-secondary, #999);
 }
 .song-list {
   display: flex;

@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <!-- 排行榜入口 -->
     <view class="section">
       <text class="section-title">排行榜</text>
       <view class="ranking-entry" @click="goToRanking">
@@ -12,8 +13,41 @@
       </view>
     </view>
 
+    <!-- 分类筛选 -->
     <view class="section">
       <text class="section-title">推荐歌单</text>
+
+      <!-- 主分类 -->
+      <scroll-view class="cat-scroll" scroll-x>
+        <view class="cat-row">
+          <view
+            v-for="(cat, idx) in mainCategories"
+            :key="idx"
+            class="cat-tag"
+            :class="{ active: mainIndex === idx }"
+            @click="onSelectMain(idx)"
+          >
+            <text class="cat-text">{{ cat.tag_name }}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 子分类 -->
+      <scroll-view v-if="subCategories.length" class="cat-scroll" scroll-x>
+        <view class="cat-row">
+          <view
+            v-for="(sub, idx) in subCategories"
+            :key="sub.tag_id"
+            class="cat-tag sub"
+            :class="{ active: subIndex === idx }"
+            @click="onSelectSub(idx)"
+          >
+            <text class="cat-text">{{ sub.tag_name }}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 歌单网格 -->
       <view v-if="loading" class="playlist-grid">
         <view v-for="i in 6" :key="i" class="playlist-card skeleton">
           <view class="playlist-cover skeleton-box" />
@@ -38,24 +72,79 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
-import { getPlaylistList } from '@/api/playlist'
+import { ref, computed } from 'vue'
+import { onLoad, onReachBottom } from '@dcloudio/uni-app'
+import { getPlaylistList, getPlaylistTags } from '@/api/playlist'
 import { getCover } from '@sonic-music/shared/utils/cover'
 
 const playlists = ref([])
 const loading = ref(true)
+const page = ref(1)
+const hasMore = ref(true)
 
-async function fetchPlaylists() {
+const categories = ref([])
+const mainIndex = ref(0)
+const subIndex = ref(0)
+
+const mainCategories = computed(() => {
+  return [{ tag_name: '全部', son: [] }, ...categories.value]
+})
+
+const subCategories = computed(() => {
+  const main = mainCategories.value[mainIndex.value]
+  if (!main || !main.son?.length) return []
+  return [{ tag_id: '', tag_name: '全部' }, ...main.son]
+})
+
+const activeTagId = computed(() => {
+  if (subCategories.value.length && subIndex.value > 0) {
+    return subCategories.value[subIndex.value].tag_id
+  }
+  const main = mainCategories.value[mainIndex.value]
+  return main?.tag_id || ''
+})
+
+async function fetchTags() {
+  try {
+    const res = await getPlaylistTags()
+    categories.value = res.data || res.list || res || []
+  } catch (e) {
+    console.error('[discover] fetchTags error', e)
+  }
+}
+
+async function fetchPlaylists(reset = false) {
+  if (reset) {
+    page.value = 1
+    hasMore.value = true
+    playlists.value = []
+  }
+  if (!hasMore.value) return
   loading.value = true
   try {
-    const res = await getPlaylistList({ page: 1, pagesize: 12 })
-    playlists.value = res.data?.special_list || res.data || res.list || []
+    const params = { page: page.value, pagesize: 12 }
+    if (activeTagId.value) params.category_id = activeTagId.value
+    const res = await getPlaylistList(params)
+    const list = res.data?.special_list || res.data || res.list || []
+    if (list.length < 12) hasMore.value = false
+    playlists.value = reset ? list : [...playlists.value, ...list]
+    page.value++
   } catch (e) {
     console.error('[discover] fetchPlaylists error', e)
   } finally {
     loading.value = false
   }
+}
+
+function onSelectMain(idx) {
+  mainIndex.value = idx
+  subIndex.value = 0
+  fetchPlaylists(true)
+}
+
+function onSelectSub(idx) {
+  subIndex.value = idx
+  fetchPlaylists(true)
 }
 
 function goToRanking() {
@@ -67,7 +156,12 @@ function goToPlaylist(item) {
   uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
 }
 
-onLoad(() => {
+onLoad(async () => {
+  await fetchTags()
+  fetchPlaylists(true)
+})
+
+onReachBottom(() => {
   fetchPlaylists()
 })
 </script>
@@ -120,6 +214,36 @@ onLoad(() => {
 .arrow {
   font-size: 40rpx;
   color: #ccc;
+}
+.cat-scroll {
+  width: 100%;
+  margin-bottom: 16rpx;
+}
+.cat-row {
+  display: flex;
+  gap: 12rpx;
+  padding-bottom: 4rpx;
+}
+.cat-tag {
+  flex-shrink: 0;
+  padding: 10rpx 24rpx;
+  border-radius: 30rpx;
+  background: #f5f5f5;
+}
+.cat-tag.sub {
+  padding: 8rpx 20rpx;
+  background: #fafafa;
+}
+.cat-tag.active {
+  background: var(--primary-color, #FF69B4);
+}
+.cat-text {
+  font-size: 26rpx;
+  color: var(--text-secondary, #999);
+}
+.cat-tag.active .cat-text {
+  color: #fff;
+  font-weight: 600;
 }
 .playlist-grid {
   display: grid;

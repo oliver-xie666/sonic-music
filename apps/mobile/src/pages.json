@@ -85,6 +85,13 @@
       "style": {
         "navigationBarTitleText": "下载管理"
       }
+    },
+    {
+      "path": "pages/lyrics/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {
