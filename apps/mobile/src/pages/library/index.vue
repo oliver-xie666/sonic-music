@@ -91,7 +91,7 @@ function goToLogin() {
 }
 
 function goToPlaylist(item) {
-  const id = item.id || item.playlist_id
+  const id = item.global_collection_id || item.list_create_gid || item.id || item.playlist_id
   uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
 }
 
