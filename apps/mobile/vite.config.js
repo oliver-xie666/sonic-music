@@ -12,16 +12,18 @@ export default defineConfig({
   server: {
     port: 5174,
     proxy: {
-      '/playlist': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/song': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/search': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/everyday': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/rank': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/user': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/login': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/lyric': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/artist': { target: 'http://127.0.0.1:6521', changeOrigin: true },
-      '/top': { target: 'http://127.0.0.1:6521', changeOrigin: true },
+      '/playlist': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/song': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/search': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/everyday': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/rank': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/user': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/login': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/lyric': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/artist': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/top': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/register': { target: 'http://127.0.0.1:6522', changeOrigin: true },
+      '/captcha': { target: 'http://127.0.0.1:6522', changeOrigin: true },
     }
   }
 })

@@ -128,8 +128,10 @@ import { onUnload } from '@dcloudio/uni-app'
 import { login } from '@/api/user'
 import { get } from '@/api/client'
 import { MoeAuthStore } from '@sonic-music/shared/stores/auth'
+import { useMobileAuthPersist } from '@/stores/auth'
 
 const MoeAuth = MoeAuthStore()
+const authPersist = useMobileAuthPersist()
 
 const tabs = ['手机号登录', '邮箱登录', '扫码登录']
 const loginType = ref('手机号登录')
@@ -193,6 +195,7 @@ async function phoneLogin(selectedUserId = null) {
     const res = await get(url)
     if (res.status === 1) {
       await MoeAuth.setData({ UserInfo: res.data })
+      authPersist.save(res.data)
       uni.showToast({ title: '登录成功', icon: 'success' })
       setTimeout(() => uni.navigateBack(), 800)
     }
@@ -219,6 +222,7 @@ async function emailLogin() {
     const res = await get(`/login?username=${email.account}&password=${email.password}`)
     if (res.status === 1) {
       await MoeAuth.setData({ UserInfo: res.data })
+      authPersist.save(res.data)
       uni.showToast({ title: '登录成功', icon: 'success' })
       setTimeout(() => uni.navigateBack(), 800)
     }
@@ -262,6 +266,7 @@ function startQrPolling() {
       } else if (s === 4) {
         stopQrPolling()
         await MoeAuth.setData({ UserInfo: res.data })
+        authPersist.save(res.data)
         uni.showToast({ title: '登录成功', icon: 'success' })
         setTimeout(() => uni.navigateBack(), 800)
       } else if (s === 0) {

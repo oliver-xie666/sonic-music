@@ -3,6 +3,7 @@ import { useSettingsStore } from '@sonic-music/shared/stores/settings'
 
 function buildAuthHeader() {
   const auth = MoeAuthStore()
+  console.log('[auth] UserInfo:', auth.UserInfo)
   if (!auth.UserInfo) return ''
   const parts = []
   if (auth.UserInfo.token) parts.push('token=' + encodeURIComponent(auth.UserInfo.token))
@@ -15,8 +16,6 @@ export function request(url, method, data) {
   method = method || 'GET'
   data = data || {}
   return new Promise((resolve, reject) => {
-    // H5 开发环境：baseUrl 为空，走 vite proxy（避免跨域）
-    // App/真机：从 settings 读取局域网 IP
     const settings = useSettingsStore()
     // #ifdef H5
     const baseUrl = ''
@@ -25,8 +24,16 @@ export function request(url, method, data) {
     const baseUrl = settings.apiBaseUrl || import.meta.env.VITE_APP_API_URL || 'http://127.0.0.1:6521'
     // #endif
     const authHeader = buildAuthHeader()
+
+    let finalUrl = baseUrl + url
+    if (method === 'GET' && Object.keys(data).length > 0) {
+      const qs = Object.entries(data).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
+      finalUrl += (finalUrl.includes('?') ? '&' : '?') + qs
+      data = {}
+    }
+
     uni.request({
-      url: baseUrl + url,
+      url: finalUrl,
       method,
       data,
       header: Object.assign(
