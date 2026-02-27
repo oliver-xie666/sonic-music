@@ -3,6 +3,7 @@ export { getCover } from './utils/cover.js'
 export { formatMilliseconds, formatSeconds } from './utils/time.js'
 export { getQuality } from './utils/quality.js'
 export { parseLyrics, getCurrentLineIndex } from './utils/lyrics.js'
+export { formatPlayCount } from './utils/format.js'
 
 // Constants
 export { QUALITY_MAP, THEME_COLORS, DEFAULT_API_URL } from './constants/index.js'

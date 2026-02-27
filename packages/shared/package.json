@@ -14,7 +14,8 @@
     "./stores/settings": "./src/stores/settings.js",
     "./constants": "./src/constants/index.js",
     "./composables/usePlaybackMode": "./src/composables/usePlaybackMode.js",
-    "./composables/useQueue": "./src/composables/useQueue.js"
+    "./composables/useQueue": "./src/composables/useQueue.js",
+    "./utils/format": "./src/utils/format.js"
   },
   "dependencies": {
     "pinia": "^2.1.0"
