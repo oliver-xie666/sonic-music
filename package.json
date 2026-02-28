@@ -26,7 +26,7 @@
     "build:api:win": "pnpm --filter @sonic-music/api pkgwin",
     "build:api:linux": "pnpm --filter @sonic-music/api pkglinux",
     "build:api:macos": "pnpm --filter @sonic-music/api pkgmacos",
-    "dev:mobile": "pnpm --filter @sonic-music/mobile dev:h5",
+    "dev:mobile": "pnpm --filter @sonic-music/mobile dev",
     "build:mobile:h5": "pnpm --filter @sonic-music/mobile build:h5",
     "build:mobile:android": "pnpm --filter @sonic-music/mobile build:android",
     "build:mobile:ios": "pnpm --filter @sonic-music/mobile build:ios",

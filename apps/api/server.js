@@ -272,6 +272,7 @@ async function startService() {
 
   appExt.service = app.listen(port, host, () => {
     console.log(`server running @ http://${host || 'localhost'}:${port}`);
+    fs.writeFileSync(path.join(process.cwd(), '.api-port'), String(port));
   });
 
   return appExt;

@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "private": true,
   "scripts": {
+    "dev": "node scripts/dev.cjs",
     "dev:h5": "uni",
     "build:h5": "uni build",
     "build:android": "uni build --platform android",
