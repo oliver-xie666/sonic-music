@@ -119,14 +119,8 @@
         "selectedIconPath": "static/icons/discover-active.png"
       },
       {
-        "pagePath": "pages/search/index",
-        "text": "搜索",
-        "iconPath": "static/icons/search.png",
-        "selectedIconPath": "static/icons/search-active.png"
-      },
-      {
         "pagePath": "pages/library/index",
-        "text": "我的",
+        "text": "音乐库",
         "iconPath": "static/icons/library.png",
         "selectedIconPath": "static/icons/library-active.png"
       }
