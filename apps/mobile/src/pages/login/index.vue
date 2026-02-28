@@ -3,8 +3,7 @@
     <view class="container">
       <!-- Logo -->
       <view class="logo-wrap">
-        <view class="logo-icon">♪</view>
-        <text class="logo-text">Sonic Music</text>
+        <image class="logo-img" src="https://www.kugou.com/yy/static/images/play/logo.png" mode="aspectFit" />
       </view>
 
       <text class="title">登录酷狗账号</text>
@@ -117,7 +116,13 @@
       </view>
 
       <!-- 提示 -->
-      <text class="disclaimer">登录即表示同意相关服务协议，推荐使用验证码登录</text>
+      <view class="disclaimer">
+        <view class="disclaimer-badge"><text class="disclaimer-badge-text">!</text></view>
+        <text class="disclaimer-text">Sonic Music 承诺不会保存你的任何账号信息到云端。你的密码会在本地进行加密后再传输到酷狗官方。Sonic Music 并非酷狗官方网站，输入账号信息前请慎重考虑，非所有账号都支持账号密码登录。<text class="disclaimer-bold">推荐</text>使用验证码登录。</text>
+      </view>
+      <view class="register-link" @click="openRegister">
+        <text class="register-text">还没有账号？</text>
+      </view>
     </view>
   </view>
 </template>
@@ -197,7 +202,7 @@ async function phoneLogin(selectedUserId = null) {
       await MoeAuth.setData({ UserInfo: res.data })
       authPersist.save(res.data)
       uni.showToast({ title: '登录成功', icon: 'success' })
-      setTimeout(() => uni.navigateBack(), 800)
+      setTimeout(() => uni.switchTab({ url: '/pages/library/index' }), 800)
     }
   } catch (e) {
     const infoList = e?.data?.info_list
@@ -224,7 +229,7 @@ async function emailLogin() {
       await MoeAuth.setData({ UserInfo: res.data })
       authPersist.save(res.data)
       uni.showToast({ title: '登录成功', icon: 'success' })
-      setTimeout(() => uni.navigateBack(), 800)
+      setTimeout(() => uni.switchTab({ url: '/pages/library/index' }), 800)
     }
   } catch (e) {
     uni.showToast({ title: e?.data || '登录失败', icon: 'none' })
@@ -268,7 +273,7 @@ function startQrPolling() {
         await MoeAuth.setData({ UserInfo: res.data })
         authPersist.save(res.data)
         uni.showToast({ title: '登录成功', icon: 'success' })
-        setTimeout(() => uni.navigateBack(), 800)
+        setTimeout(() => uni.switchTab({ url: '/pages/library/index' }), 800)
       } else if (s === 0) {
         stopQrPolling()
         qrExpired.value = true
@@ -278,6 +283,15 @@ function startQrPolling() {
       stopQrPolling()
     }
   }, 1000)
+}
+
+function openRegister() {
+  // #ifdef H5
+  window.open('https://activity.kugou.com/getvips/v-4163b2d0/index.html', '_blank')
+  // #endif
+  // #ifndef H5
+  plus.runtime.openURL('https://activity.kugou.com/getvips/v-4163b2d0/index.html')
+  // #endif
 }
 
 function stopQrPolling() {
@@ -308,21 +322,12 @@ onUnload(() => {
 }
 .logo-wrap {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   margin-bottom: 32rpx;
 }
-.logo-icon {
-  font-size: 80rpx;
-  color: var(--primary-color, #FF69B4);
-  line-height: 1;
-}
-.logo-text {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: var(--primary-color, #FF69B4);
-  margin-top: 8rpx;
-  letter-spacing: 2rpx;
+.logo-img {
+  width: 160rpx;
+  height: 80rpx;
 }
 .title {
   display: block;
@@ -417,12 +422,47 @@ onUnload(() => {
   color: #fff;
 }
 .disclaimer {
-  display: block;
-  font-size: 22rpx;
-  color: #bbb;
-  text-align: center;
+  position: relative;
   margin-top: 40rpx;
-  line-height: 1.6;
+  background: #f9fafc;
+  border-radius: 20rpx;
+  padding: 28rpx;
+}
+.disclaimer-badge {
+  position: absolute;
+  top: -18rpx;
+  left: 40rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background: var(--primary-color, #FF69B4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.disclaimer-badge-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #fff;
+}
+.disclaimer-text {
+  font-size: 22rpx;
+  color: #909399;
+  line-height: 1.5;
+  text-align: left;
+}
+.disclaimer-bold {
+  font-weight: 700;
+  color: #909399;
+}
+.register-link {
+  display: flex;
+  justify-content: center;
+  margin-top: 16rpx;
+}
+.register-text {
+  font-size: 24rpx;
+  color: var(--primary-color, #FF69B4);
 }
 /* 多账号选择 */
 .account-list {

@@ -433,21 +433,13 @@ function onLogout() {
         followedFriends.value = []
         userDetail.value = {}
         initialized = false
-        uni.navigateTo({ url: '/pages/login/index' })
       }
     }
   })
 }
 
 onShow(() => {
-  if (!isLoggedIn.value) {
-    const pages = getCurrentPages()
-    const current = pages[pages.length - 1]
-    if (current?.route === 'pages/library/index') {
-      uni.navigateTo({ url: '/pages/login/index' })
-    }
-    return
-  }
+  if (!isLoggedIn.value) return
   if (initialized) return
   initialized = true
   fetchUserDetail()
