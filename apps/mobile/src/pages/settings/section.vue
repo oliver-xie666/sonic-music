@@ -158,7 +158,6 @@ function getDisplayValue(item) {
   if (item.readonly) return item.value
   const val = storeValues.value[item.key]
   const opt = item.options?.find(o => o.value === val)
-  console.log(`[getDisplayValue] key=${item.key}, val=${val}, opt=${opt?.label}`)
   return opt ? opt.label : ''
 }
 
@@ -199,18 +198,6 @@ function saveApiUrl() {
 onLoad((query) => {
   sectionKey.value = query.key || ''
   apiUrl.value = settingsStore.apiBaseUrl
-
-  // 调试：打印所有设置值
-  console.log('[Settings Debug] Store values:', {
-    language: settingsStore.language,
-    themeColor: settingsStore.themeColor,
-    theme: settingsStore.theme,
-    quality: settingsStore.quality,
-    dataSource: settingsStore.dataSource,
-    enableDownload: settingsStore.enableDownload,
-    wlanOnly: settingsStore.wlanOnly,
-  })
-  console.log('[Settings Debug] storeValues computed:', storeValues.value)
 })
 </script>
 
