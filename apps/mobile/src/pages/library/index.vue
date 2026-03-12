@@ -267,6 +267,7 @@
 
 <script setup>
 import { ref, computed, nextTick } from 'vue'
+import AppHeader from '@/components/common/AppHeader.vue'
 import { onShow } from '@dcloudio/uni-app'
 import { MoeAuthStore } from '@sonic-music/shared/stores/auth'
 import { useMobileAuthPersist } from '@/stores/auth'

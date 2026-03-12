@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <AppHeader />
     <!-- 排行榜入口 -->
     <view class="section">
       <text class="section-title">排行榜</text>
@@ -73,6 +74,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import AppHeader from '@/components/common/AppHeader.vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { getPlaylistList, getPlaylistTags } from '@/api/playlist'
 import { getCover } from '@sonic-music/shared/utils/cover'
@@ -168,7 +170,7 @@ onReachBottom(() => {
 
 <style scoped>
 .page {
-  padding: 30rpx 30rpx 0;
+  padding: 0 30rpx 0;
   background: var(--background-color, #FFF0F5);
   min-height: 100vh;
 }

@@ -18,7 +18,18 @@ const authStore = MoeAuthStore()
 const authPersist = useMobileAuthPersist()
 
 onLaunch(async () => {
-  applyTheme(settingsStore.theme)
+  // 迁移旧数据到新字段
+  if (settingsStore.theme === 'pink') {
+    settingsStore.themeColor = 'pink'
+    settingsStore.theme = 'auto'
+  }
+  if (settingsStore.quality === 'standard') {
+    settingsStore.quality = 'hires'
+  }
+  if (!settingsStore.themeColor) settingsStore.themeColor = 'pink'
+  if (!settingsStore.dataSource) settingsStore.dataSource = 'official'
+
+  applyTheme(settingsStore.themeColor)
   const saved = authPersist.load()
   if (saved) {
     await authStore.setData({ UserInfo: saved })
@@ -32,7 +43,7 @@ onLaunch(async () => {
 })
 
 onShow(() => {
-  applyTheme(settingsStore.theme)
+  applyTheme(settingsStore.themeColor)
 })
 </script>
 

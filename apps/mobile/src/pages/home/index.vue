@@ -1,11 +1,6 @@
 <template>
   <view class="page">
-    <view class="header">
-      <text class="title">Sonic Music</text>
-      <view class="header-right" @click="goToSettings">
-        <text class="settings-icon">⚙</text>
-      </view>
-    </view>
+    <AppHeader />
 
     <!-- 每日推荐 -->
     <view class="section">
@@ -117,6 +112,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import AppHeader from '@/components/common/AppHeader.vue'
 import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { usePlayerStore } from '@/stores/player'
 import { useAudioPlayer } from '@/composables/useAudioPlayer'
@@ -202,9 +198,6 @@ function goToPlaylist(item) {
   uni.navigateTo({ url: `/pages/playlist/detail?id=${id}` })
 }
 
-function goToSettings() {
-  uni.navigateTo({ url: '/pages/settings/index' })
-}
 
 onLoad(() => {
   fetchRecommend()
@@ -220,24 +213,9 @@ onPullDownRefresh(async () => {
 
 <style scoped>
 .page {
-  padding: 40rpx 30rpx 0;
+  padding: 0 30rpx 0;
   min-height: 100vh;
   background: var(--background-color, #FFF0F5);
-}
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 50rpx;
-}
-.title {
-  font-size: 52rpx;
-  font-weight: 700;
-  color: var(--text-primary, #333);
-}
-.settings-icon {
-  font-size: 44rpx;
-  color: var(--text-secondary, #999);
 }
 .section {
   margin-bottom: 50rpx;

@@ -51,6 +51,12 @@
       }
     },
     {
+      "path": "pages/settings/section",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
       "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录"
@@ -98,7 +104,8 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "Sonic Music",
     "navigationBarBackgroundColor": "#FFF0F5",
-    "backgroundColor": "#FFF0F5"
+    "backgroundColor": "#FFF0F5",
+    "navigationStyle": "custom"
   },
   "tabBar": {
     "color": "#999999",
